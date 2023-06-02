@@ -1,5 +1,6 @@
 'use client';
 import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const client = new ApolloClient({
   uri: '/graphql',
@@ -13,9 +14,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <ApolloProvider client={client}>
-        <body>{children}</body>
-      </ApolloProvider>
+      <head>
+        <title>Daylist</title>
+      </head>
+      <body>
+        <ApolloProvider client={client}>
+          <>{children}</>
+        </ApolloProvider>
+      </body>
     </html>
   );
 }

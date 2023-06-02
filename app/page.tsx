@@ -5,6 +5,7 @@ import { graphql } from '@/graphql/types';
 const GET_DATA = graphql(`
   query Query {
     hello
+    world
   }
 `);
 
@@ -17,9 +18,14 @@ export default function Home() {
   return (
     <main>
       <h1>Daylist</h1>
-      <span>
-        {data?.hello} <a href="/graphql">{}</a>
-      </span>
+      <p>
+        {data?.hello + ' '}
+        <span>
+          <a href="graphql" className="link-info">
+            {data?.world}
+          </a>
+        </span>
+      </p>
     </main>
   );
 }
