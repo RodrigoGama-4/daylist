@@ -1,0 +1,20 @@
+{
+  "editor.insertSpaces": true,
+  "editor.tabSize": 2,
+  // Prettier
+  "prettier.useTabs": false,
+  "prettier.tabWidth": 2,
+  "prettier.semi": true,
+  "prettier.singleQuote": true,
+  "prettier.trailingComma": "all",
+  "prettier.bracketSpacing": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.formatOnType": true,
+  "editor.formatOnPaste": true,
+
+  "todo-tree.highlights.useColourScheme": true,
+  "debug.javascript.autoAttachFilter": "disabled",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "javascript.updateImportsOnFileMove.enabled": "always"
+}
