@@ -15,7 +15,7 @@ export default function Mural() {
       ref={constraintsRef}
       className="flex flex-col h-full border-2 border-red-500"
     >
-      <LayoutGrid className="flex-1 overflow-scroll" />
+      <LayoutGrid className="flex-1" />
 
       <div className="fixed bottom-0 right-0 left-0 p-2 flex justify-end border-2 border-green-400">
         <motion.div
