@@ -1,11 +1,8 @@
 'use client';
-import LayoutGrid from '@/src/components/LayoutGrid';
+import LayoutGrid, { onAskNoteCreation$ } from '@/src/components/LayoutGrid';
 import { BiNote } from 'react-icons/bi';
 import { motion, MotionProps } from 'framer-motion';
 import { useRef } from 'react';
-import { Subject } from 'rxjs';
-
-const onAskNoteCreation$ = new Subject();
 
 export default function Mural() {
   const constraintsRef = useRef<HTMLDivElement>(null);
@@ -25,6 +22,9 @@ export default function Mural() {
           dragConstraints={constraintsRef} // limite do drag
           whileTap={{ scale: 1.5 }}
           whileDrag={{ x: -4, y: -4, skewY: -10, rotateY: 10, scale: 1.8 }}
+          onDragEnd={(e, info) => {
+            onAskNoteCreation$.next(info.point);
+          }}
         >
           <BiNote className="block text-3xl" />
         </motion.div>

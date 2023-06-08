@@ -8,8 +8,9 @@ import RGL, {
 } from 'react-grid-layout';
 import { MuralElement } from '@/src/components/MuralElement';
 import { MdDragHandle, MdDragIndicator } from 'react-icons/md';
-
 import _ from 'lodash';
+import { Subject } from 'rxjs';
+import Point from '../Point';
 
 // GRID
 export default function LayoutGrid({ className }: { className?: string }) {
@@ -35,6 +36,14 @@ export default function LayoutGrid({ className }: { className?: string }) {
   //     document.removeEventListener('dblclick', handler);
   //   };
   // }, []);
+
+  useEffect(() => {
+    const handleNoteCreation = (point: Point) => {
+      console.log(point.x, point.y);
+    };
+    const sub = onAskNoteCreation$.subscribe(handleNoteCreation);
+    return () => sub.unsubscribe();
+  }, []);
 
   return (
     <div className={className ?? ''}>
@@ -85,3 +94,6 @@ function ResizeHandle() {
     </div>
   );
 }
+
+/** Observes the onDragEnd point in the _Mural_ */
+export const onAskNoteCreation$ = new Subject<Point>();
