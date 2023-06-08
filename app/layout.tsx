@@ -1,6 +1,8 @@
 'use client';
 import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import CustomNavbar from './navbar';
+import CustomNoteTree from './notetree';
 
 const client = new ApolloClient({
   uri: '/graphql',
@@ -18,9 +20,10 @@ export default function RootLayout({
         <title>Daylist</title>
       </head>
       <body>
-        <ApolloProvider client={client}>
-          <>{children}</>
-        </ApolloProvider>
+        <div className="position-fixed">
+          <CustomNavbar />
+        </div>
+        <ApolloProvider client={client}>{children}</ApolloProvider>
       </body>
     </html>
   );
