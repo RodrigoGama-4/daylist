@@ -1,5 +1,6 @@
 'use client';
 import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client';
+import './globals.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import CustomNavbar from './navbar';
 import CustomNoteTree from './notetree';
