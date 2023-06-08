@@ -24,46 +24,5 @@ export default function Home() {
     fechado: { opacity: 0, x: '-100%' },
   };
 
-  return (
-    <main>
-      <h1>Daylist</h1>
-      <p>
-        {data?.hello + ' '}
-        <span>
-          <a href="graphql" className="link-info">
-            {data?.world}
-          </a>
-        </span>
-      </p>
-      <div>
-        <motion.nav
-          animate={isVisible ? 'aberto' : 'fechado'}
-          variants={variants}
-          style={{
-            background: '#EEE',
-            width: 300,
-          }}
-          className="nav nav-tabs"
-        >
-          <div>a</div>
-          <div>b</div>
-        </motion.nav>
-        <motion.button
-          className="btn btn-primary"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 1 }}
-          onClick={toggleVisibility}
-          drag
-          dragConstraints={{
-            top: -0,
-            left: -0,
-            right: 100,
-            bottom: 100,
-          }}
-        >
-          Click & Drag
-        </motion.button>
-      </div>
-    </main>
-  );
+  return <main></main>;
 }
