@@ -1,7 +1,15 @@
+'use client';
 import { useEffect, useState } from 'react';
 
 export default function useWindowSize() {
-  const [size, setSize] = useState<{ w: number; h: number }>(initialValue);
+  const [size, setSize] = useState<{ w: number; h: number }>({ w: -1, h: -1 });
+
+  useEffect(() => {
+    setSize({
+      w: window.innerWidth,
+      h: window.innerHeight,
+    });
+  }, []);
 
   useEffect(() => {
     const handler = (e: UIEvent) => {
@@ -19,8 +27,3 @@ export default function useWindowSize() {
     windowY: size.h,
   };
 }
-
-const initialValue = {
-  w: window.innerWidth,
-  h: window.innerHeight,
-};

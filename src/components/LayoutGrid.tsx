@@ -1,17 +1,12 @@
 'use client';
-import { useEffect, useRef, useState, ReactNode } from 'react';
-import RGL, {
-  WidthProvider,
-  ReactGridLayoutProps,
-  Layout,
-  CoreProps,
-} from 'react-grid-layout';
+import { useEffect, useState } from 'react';
+import RGL, { WidthProvider, Layout } from 'react-grid-layout';
 import { MuralElement } from '@/src/components/MuralElement';
 import { MdDragHandle, MdDragIndicator } from 'react-icons/md';
 import _ from 'lodash';
 import { Subject } from 'rxjs';
 import Point from '../Point';
-import useWindowSize from '../hooks/useWindowSize';
+import useWindowSize from '@/src/hooks/useWindowSize';
 
 // GRID
 export default function LayoutGrid({
