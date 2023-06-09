@@ -1,26 +1,14 @@
 import React, { useState } from 'react';
 import { Navbar, Container, Nav, Button } from 'react-bootstrap';
 import { BsFillStarFill, BsFillPersonFill, BsStack } from 'react-icons/bs';
-import { useRouter } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import CustomNoteTree from './notetree';
 import AccountInfo from './account';
 
 function CustomNavbar() {
   const router = useRouter();
-  const [estado, setEstado] = useState('');
-
-  const handleNavClick = (nav: string) => {
-    if (estado === nav) {
-      setEstado('');
-    } else {
-      setEstado(nav);
-    }
-    router.push(`/?nav=${nav}`);
-  };
-
-  const handleAccountOverlayClick = () => {
-    setEstado('');
-  };
+  const query = useSearchParams();
+  const nav = query.get('nav');
 
   return (
     <>
@@ -32,24 +20,32 @@ function CustomNavbar() {
       >
         <Container>
           <Nav className="flex-column" style={{ position: 'absolute', top: 0 }}>
-            <Button
-              onClick={() => handleNavClick('favorites')}
-              className="mb-3"
-            >
+            <Button onClick={() => console.log('futura logo')} className="mb-3">
               <BsFillStarFill />
             </Button>
-            <Button onClick={() => handleNavClick('account')} className="mb-3">
+            <Button
+              onClick={() => {
+                router.push(nav !== 'account' ? '/?nav=account' : '/');
+              }}
+              className="mb-3"
+            >
               <BsFillPersonFill />
             </Button>
-            <Button onClick={() => handleNavClick('mynotes')} className="mb-3">
+
+            <Button
+              onClick={() => {
+                router.push(nav !== 'mynotes' ? '/?nav=mynotes' : '/');
+              }}
+              className="mb-3"
+            >
               <BsStack />
             </Button>
           </Nav>
         </Container>
       </Navbar>
-      {estado === 'mynotes' && <CustomNoteTree />}
-      {estado === 'account' && (
-        <div className="overlay" onClick={handleAccountOverlayClick}>
+      {nav === 'mynotes' && <CustomNoteTree />}
+      {nav === 'account' && (
+        <div className="overlay" onClick={() => router.push('/')}>
           <AccountInfo />
         </div>
       )}
