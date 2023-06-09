@@ -14,13 +14,20 @@ import Point from '../Point';
 import useWindowSize from '../hooks/useWindowSize';
 
 // GRID
-export default function LayoutGrid({ className }: { className?: string }) {
+export default function LayoutGrid({
+  className,
+  isCreateMode,
+}: {
+  className?: string;
+  isCreateMode: boolean;
+}) {
   const [layout, setLayout] = useState<Layout[]>([]);
   const { windowX, windowY } = useWindowSize();
 
   const cellSize = 32; // pixels, X & Y
-  const cellCountX = Math.round(windowX / cellSize); // grid units
-  const cellCountY = Math.round(windowY / cellSize);
+  const gridMargin = 0;
+  const cellCountX = Math.round(windowX / cellSize) - 1; // grid units
+  const cellCountY = Math.round(windowY / cellSize) - 1;
 
   useEffect(() => {
     const handleNoteCreation = (point: Point) => {
@@ -44,21 +51,13 @@ export default function LayoutGrid({ className }: { className?: string }) {
 
   return (
     <div className={className ?? ''}>
-      <div className="flex [&>*]:h-[32px] [&>*]:w-[32px]">
-        {_.range(0, cellCountX).map((i) => (
-          <div
-            key={i}
-            className={i % 2 === 0 ? 'bg-black' : 'bg-blue-500'}
-          ></div>
-        ))}
-      </div>
       <ReactGridLayout
         {...{
           layout: layout,
           onLayoutChange: setLayout,
           rowHeight: cellSize,
           cols: cellCountX,
-          margin: [0, 0],
+          margin: [gridMargin, gridMargin],
           resizeHandle: ResizeHandle(),
           draggableHandle: '.react-draggable-handle',
           // TODO trazer à frente quando mover ou mudar de tamanho
@@ -66,7 +65,6 @@ export default function LayoutGrid({ className }: { className?: string }) {
           allowOverlap: true,
           autoSize: false,
           useCSSTransforms: true,
-          verticalCompact: true,
         }}
       >
         {
@@ -81,7 +79,6 @@ export default function LayoutGrid({ className }: { className?: string }) {
               }}
               data-grid={L} // deixar aqui senão buga
             >
-              {/* Não funciona sem essa div ao redor */}
               <MuralElement id={i} />
             </div>
           ))
