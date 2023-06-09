@@ -1,8 +1,7 @@
 'use client';
 import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import CustomNavbar from './navbar';
-import CustomNoteTree from './notetree';
+import CustomNavbar from '../src/components/navbar';
 
 const client = new ApolloClient({
   uri: '/graphql',
