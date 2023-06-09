@@ -1,14 +1,5 @@
-'use client';
-import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client';
 import './globals.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import CustomNavbar from './navbar';
-import CustomNoteTree from './notetree';
-
-const client = new ApolloClient({
-  uri: '/graphql',
-  cache: new InMemoryCache(),
-});
 
 export default function RootLayout({
   children,
@@ -17,15 +8,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <title>Daylist</title>
-      </head>
-      <body>
-        <div className="position-fixed">
-          <CustomNavbar />
-        </div>
-        <ApolloProvider client={client}>{children}</ApolloProvider>
-      </body>
+      <head></head>
+      <body>{children}</body>
     </html>
   );
 }

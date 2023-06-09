@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Navbar, Container, Nav, Button } from 'react-bootstrap';
 import { BsFillStarFill, BsFillPersonFill, BsStack } from 'react-icons/bs';
 import { useRouter } from 'next/navigation';
-import CustomNoteTree from './notetree';
+import NoteTree from './NoteTree';
 
 function CustomNavbar() {
   const router = useRouter();
@@ -35,7 +35,7 @@ function CustomNavbar() {
           </Button>
         </Nav>
       </Container>
-      {estado === 'mynotes' && isNoteTreeVisible && <CustomNoteTree />}{' '}
+      {estado === 'mynotes' && isNoteTreeVisible && <NoteTree />}{' '}
       <style>{`
         .navbar {
           height: 100vh;

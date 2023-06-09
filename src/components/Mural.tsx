@@ -10,11 +10,12 @@ export default function Mural() {
   return (
     <div
       ref={constraintsRef}
-      className="flex flex-col h-full border-2 border-red-500"
+      className="flex flex-col min-h-full border-2 border-red-500"
     >
-      <LayoutGrid className="flex-1" />
+      <LayoutGrid />
 
-      <div className="fixed bottom-0 right-0 left-0 p-2 flex justify-end border-2 border-green-400">
+      {/* Botão de adicionar nota */}
+      <div className="mx-10 fixed bottom-0 right-0 left-0 p-2 flex justify-end border-2 border-green-400 pointer-events-none">
         <motion.div
           drag
           dragSnapToOrigin={true} // volta ao início
@@ -25,6 +26,7 @@ export default function Mural() {
           onDragEnd={(e, info) => {
             onAskNoteCreation$.next(info.point);
           }}
+          className="pointer-events-auto hover:text-blue-600"
         >
           <BiNote className="block text-3xl" />
         </motion.div>

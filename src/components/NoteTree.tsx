@@ -1,7 +1,6 @@
 import React from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
 
-const CustomNoteTree = () => {
+const NoteTree = () => {
   const estiloComponente = {
     height: '100vh',
     border: '2px solid black',
@@ -12,4 +11,4 @@ const CustomNoteTree = () => {
   return <div style={estiloComponente}>{<div>TITULO DO PROJETO</div>}</div>;
 };
 
-export default CustomNoteTree;
+export default NoteTree;
