@@ -1,50 +1,68 @@
 import React, { useState } from 'react';
 import { Navbar, Container, Nav, Button } from 'react-bootstrap';
 import { BsFillStarFill, BsFillPersonFill, BsStack } from 'react-icons/bs';
-import { useRouter } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import NoteTree from './NoteTree';
+import AccountInfo from './Account';
 
 function CustomNavbar() {
   const router = useRouter();
-  const [estado, setEstado] = useState<string>('');
-  const [isNoteTreeVisible, setIsNoteTreeVisible] = useState<boolean>(false);
-
-  const handleNoteTreeClick = () => {
-    setEstado('mynotes');
-    setIsNoteTreeVisible((prevVisible) => !prevVisible);
-  };
+  const query = useSearchParams();
+  const nav = query.get('nav');
 
   return (
-    <Navbar bg="dark" variant="dark" className="position-absolute">
-      <Container>
-        <Nav className="flex-column">
-          <Button
-            onClick={() => {
-              setEstado('favorites');
-              router.push('');
-            }}
-            className="mb-3"
-          >
-            <BsFillStarFill />
-          </Button>
-          <Button onClick={() => {}} className="mb-3">
-            <BsFillPersonFill />
-          </Button>
-          <Button onClick={handleNoteTreeClick} className="mb-3">
-            <BsStack />
-          </Button>
-        </Nav>
-      </Container>
-      {estado === 'mynotes' && isNoteTreeVisible && <NoteTree />}{' '}
-      <style>{`
-        .navbar {
-          height: 100vh;
-          left: 5;
+    <>
+      <Navbar
+        bg="dark"
+        variant="dark"
+        className="position-absolute vh-100"
+        style={{ width: '4rem' }}
+      >
+        <Container>
+          <Nav className="flex-column" style={{ position: 'absolute', top: 0 }}>
+            <Button onClick={() => console.log('futura logo')} className="mb-3">
+              <BsFillStarFill />
+            </Button>
+            <Button
+              onClick={() => {
+                router.push(nav !== 'account' ? '/?nav=account' : '/');
+              }}
+              className="mb-3"
+            >
+              <BsFillPersonFill />
+            </Button>
+
+            <Button
+              onClick={() => {
+                router.push(nav !== 'mynotes' ? '/?nav=mynotes' : '/');
+              }}
+              className="mb-3"
+            >
+              <BsStack />
+            </Button>
+          </Nav>
+        </Container>
+      </Navbar>
+      {nav === 'mynotes' && <NoteTree />}
+      {nav === 'account' && (
+        <div className="overlay" onClick={() => router.push('/')}>
+          <AccountInfo />
+        </div>
+      )}
+      <style jsx>{`
+        .overlay {
+          position: fixed;
           top: 0;
-          width: 7rem;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.5);
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
       `}</style>
-    </Navbar>
+    </>
   );
 }
 
