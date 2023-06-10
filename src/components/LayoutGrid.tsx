@@ -16,7 +16,8 @@ export default function LayoutGrid({
   className?: string;
   isCreateMode: boolean;
 }) {
-  const [layout, setLayout] = useState<Layout[]>([]);
+  // o último elemento é o primeiro a ser visto (como se fosse z-index)
+  const [layouts, setLayouts] = useState<Layout[]>([]);
   const { windowX, windowY } = useWindowSize();
 
   const cellSize = 32; // pixels, X & Y
@@ -29,14 +30,15 @@ export default function LayoutGrid({
       if (!windowX || !windowY) return;
       const x = Math.round(point.x / cellSize);
       const y = Math.round(point.y / cellSize);
-      setLayout((L) => [
+      setLayouts((L) => [
         ...L,
         {
           x,
           y,
           w: 5,
           h: 5, // iguais => quadrado
-          i: '0',
+          // TODO? adicionar uma key diferente? Depende da estrutura do que será filho do <MuralElement />, mas talvez eu deixe isso por simplicidade
+          i: Date.now().toString(),
         },
       ]);
     };
@@ -73,8 +75,8 @@ export default function LayoutGrid({
         </div>
         <ReactGridLayout
           {...{
-            layout: layout,
-            onLayoutChange: setLayout,
+            layout: layouts,
+            onLayoutChange: setLayouts,
             rowHeight: cellSize,
             cols: Math.round(cellCountX),
             margin: [gridMargin, gridMargin],
@@ -88,24 +90,25 @@ export default function LayoutGrid({
             transformScale: 1,
           }}
         >
-          {
-            // FIXME do not use the index
-            layout.map((L, i) => (
-              <div
-                key={i}
-                className="shadow-sm outline outline-1 outline-black bg-white"
-                style={{
-                  minHeight: cellSize,
-                  minWidth: cellSize,
-                }}
-                data-grid={L} // deixar aqui senão buga
-                onPointerDown={(e) => (e.currentTarget.style.zIndex = '10')}
-                onPointerUp={(e) => (e.currentTarget.style.zIndex = 'auto')}
-              >
-                <MuralElement id={i} />
-              </div>
-            ))
-          }
+          {layouts.map((layout, j) => (
+            <div
+              key={layout.i}
+              className="shadow-sm outline outline-1 outline-black bg-white"
+              style={{
+                minHeight: cellSize,
+                minWidth: cellSize,
+              }}
+              data-grid={layout} // deixar aqui senão buga
+              onPointerDown={(e) => {
+                // trazer layout à frente, visto como acima dos outros
+                let ls = [...layouts];
+                ls = [...ls.slice(0, j), ...ls.slice(j + 1, undefined), layout];
+                setLayouts(ls);
+              }}
+            >
+              <MuralElement id={layout.i} />
+            </div>
+          ))}
         </ReactGridLayout>
       </div>
     </div>
