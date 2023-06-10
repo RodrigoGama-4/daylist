@@ -1,63 +1,55 @@
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { BsPencilSquare } from 'react-icons/bs';
+import { motion } from 'framer-motion';
 
 function AccountInfo() {
-  const [showPopover, setShowPopover] = useState(true);
-
-  const togglePopover = () => {
-    setShowPopover(!showPopover);
-  };
-
-  const router = useRouter();
-
   const popover = (
-    <div className="account-info-popover">
-      <button
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        height: '100%',
+        width: '100%',
+      }}
+    >
+      <motion.button
         className="btn btn-primary"
         style={{ position: 'absolute', top: 5, right: 5 }}
+        whileHover={{
+          scale: 1.1,
+        }}
       >
         <BsPencilSquare />
-      </button>
+      </motion.button>
     </div>
   );
 
   return (
     <>
-      {showPopover && (
-        <div
-          className="popover-container position-absolute"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {popover}
-        </div>
-      )}
-      <style jsx>{`
-        .popover-container {
-          width: 50vw;
-          height: 50vh;
-          background-color: #fff;
-          padding: 20px;
-          border-radius: 10px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .account-info-popover {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          height: 100%;
-          width: 100%;
-        }
-
-        .account-info-image {
-          width: 50%;
-          height: auto;
-        }
-      `}</style>
+      <motion.div
+        className="position-absolute "
+        style={{
+          width: '50vw',
+          height: '50vh',
+          backgroundColor: '#fff',
+          padding: '20px',
+          borderRadius: '10px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+        initial={{ opacity: 0, scale: 1.2 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{
+          ease: [0, 0.71, 0.2, 1.01],
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {popover}
+      </motion.div>
     </>
   );
 }
