@@ -12,8 +12,6 @@ const GET_DATA = graphql(`
 `);
 
 export default function Home() {
-  const [isVisible, setVisible] = useState(true);
-  const toggleVisibility = () => setVisible(!isVisible);
   const { loading, error, data } = useQuery(GET_DATA);
 
   if (loading) return <p>Loading...</p>;

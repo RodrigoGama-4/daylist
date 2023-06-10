@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { Navbar, Container, Nav, Button } from 'react-bootstrap';
 import { BsFillStarFill, BsFillPersonFill, BsStack } from 'react-icons/bs';
 import { useSearchParams, useRouter } from 'next/navigation';
-import CustomNoteTree from './notetree';
-import AccountInfo from './account';
+import NoteTree from './NoteTree';
+import AccountInfo from './Account';
 
-function CustomNavbar() {
+export default function CustomNavbar() {
   const router = useRouter();
   const query = useSearchParams();
   const nav = query.get('nav');
@@ -43,7 +43,7 @@ function CustomNavbar() {
           </Nav>
         </Container>
       </Navbar>
-      {nav === 'mynotes' && <CustomNoteTree />}
+      {nav === 'mynotes' && <NoteTree />}
       {nav === 'account' && (
         <div className="overlay" onClick={() => router.push('/')}>
           <AccountInfo />
@@ -65,5 +65,3 @@ function CustomNavbar() {
     </>
   );
 }
-
-export default CustomNavbar;

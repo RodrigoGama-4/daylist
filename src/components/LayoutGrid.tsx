@@ -1,69 +1,113 @@
 'use client';
-import { useEffect, useRef, useState, ReactNode } from 'react';
-import RGL, {
-  WidthProvider,
-  ReactGridLayoutProps,
-  Layout,
-  CoreProps,
-} from 'react-grid-layout';
+import { useEffect, useState } from 'react';
+import RGL, { WidthProvider, Layout } from 'react-grid-layout';
 import { MuralElement } from '@/src/components/MuralElement';
 import { MdDragHandle, MdDragIndicator } from 'react-icons/md';
 import _ from 'lodash';
 import { Subject } from 'rxjs';
 import Point from '../Point';
+import useWindowSize from '@/src/hooks/useWindowSize';
 
 // GRID
-export default function LayoutGrid({ className }: { className?: string }) {
-  const [layout, setLayout] = useState<Layout[]>();
+export default function LayoutGrid({
+  className,
+  isCreateMode,
+}: {
+  className?: string;
+  isCreateMode: boolean;
+}) {
+  const [layout, setLayout] = useState<Layout[]>([]);
+  const { windowX, windowY } = useWindowSize();
 
-  // useEffect(() => {
-  //   const handler = () => {
-  //     const i = 0;
-  //     const y = 10;
-  //     setLayout((L) => [
-  //       ...(L ?? []),
-  //       {
-  //         x: (i * 2) % 24, // rest of 24 cols
-  //         y: Math.floor(i / 6) * y,
-  //         w: 1 + Math.round(Math.random() * 4),
-  //         h: y,
-  //         i: i.toString(),
-  //       },
-  //     ]);
-  //   };
-  //   document.addEventListener('dblclick', handler);
-  //   return () => {
-  //     document.removeEventListener('dblclick', handler);
-  //   };
-  // }, []);
+  const cellSize = 32; // pixels, X & Y
+  const gridMargin = 4;
+  const cellCountX = windowX / (cellSize + gridMargin); // grid units
+  const cellCountY = windowY / (cellSize + gridMargin);
 
   useEffect(() => {
     const handleNoteCreation = (point: Point) => {
-      console.log(point.x, point.y);
+      if (!windowX || !windowY) return;
+      const x = Math.round(point.x / cellSize);
+      const y = Math.round(point.y / cellSize);
+      setLayout((L) => [
+        ...L,
+        {
+          x,
+          y,
+          w: 5,
+          h: 5, // iguais => quadrado
+          i: '0',
+        },
+      ]);
     };
     const sub = onAskNoteCreation$.subscribe(handleNoteCreation);
     return () => sub.unsubscribe();
-  }, []);
+  }, [windowX, windowY]);
 
   return (
-    <div className={className ?? ''}>
-      <ReactGridLayout
-        {...{
-          layout: layout,
-          onLayoutChange: setLayout,
-          rowHeight: 16,
-          cols: 36,
-          margin: [8, 8],
-          resizeHandle: ResizeHandle(),
-          draggableHandle: '.react-draggable-handle',
-          // TODO trazer à frente quando mover ou mudar de tamanho
-        }}
-      >
-        {
-          // FIXME do not use the index
-          layout && layout.map((L, i) => <MuralElement key={i} id={i} />)
-        }
-      </ReactGridLayout>
+    <div className={`${className ?? ''}`}>
+      <div className="flex fixed">
+        {_.range(0, cellCountX).map((i) => (
+          <div
+            key={i}
+            className={i % 2 === 0 ? 'bg-blue-500' : 'bg-black'}
+            style={{
+              width: cellSize + gridMargin,
+              height: gridMargin,
+            }}
+          />
+        ))}
+      </div>
+      <div className="flex">
+        <div className="flex flex-col fixed">
+          {_.range(0, cellCountY).map((i) => (
+            <div
+              key={i}
+              className={i % 2 === 0 ? 'bg-blue-500' : 'bg-black'}
+              style={{
+                width: gridMargin,
+                height: cellSize + gridMargin,
+              }}
+            />
+          ))}
+        </div>
+        <ReactGridLayout
+          {...{
+            layout: layout,
+            onLayoutChange: setLayout,
+            rowHeight: cellSize,
+            cols: Math.round(cellCountX),
+            margin: [gridMargin, gridMargin],
+            resizeHandle: ResizeHandle(),
+            // draggableHandle: '.react-draggable-handle',
+            // TODO trazer à frente quando mover ou mudar de tamanho
+            preventCollision: false,
+            allowOverlap: true,
+            autoSize: true,
+            useCSSTransforms: true,
+            transformScale: 1,
+          }}
+        >
+          {
+            // FIXME do not use the index
+            layout.map((L, i) => (
+              <div
+                key={i}
+                className="shadow-sm outline outline-1 outline-black bg-white"
+                style={{
+                  minHeight: cellSize,
+                  minWidth: cellSize,
+                }}
+                data-grid={L} // deixar aqui senão buga
+                onPointerDown={(e) => (e.currentTarget.style.zIndex = '10')}
+                onPointerUp={(e) => (e.currentTarget.style.zIndex = 'auto')}
+              >
+                <MuralElement id={i} />
+              </div>
+            ))
+          }
+        </ReactGridLayout>
+      </div>
     </div>
   );
 }

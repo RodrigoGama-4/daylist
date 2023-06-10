@@ -10,12 +10,9 @@ export function MuralElement({
   id: string | number;
 }) {
   return (
-    <div
-      key={id}
-      id={`item-${id}`}
-      className="shadow-sm border-2 border-black bg-white"
-    >
+    <div key={id} id={`item-${id}`}>
       <DragHandle />
+      {id}
       {children}
     </div>
   );
