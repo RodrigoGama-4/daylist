@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Navbar, Container, Nav, Button } from 'react-bootstrap';
 import { BsFillStarFill, BsFillPersonFill, BsStack } from 'react-icons/bs';
 import { useSearchParams, useRouter } from 'next/navigation';
-import NoteTree from '../NoteTree';
+import NoteTree from './NoteTree';
 import AccountInfo from './Account';
 import { motion } from 'framer-motion';
 
