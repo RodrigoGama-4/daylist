@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import NoteTree from './NoteTree';
 import AccountInfo from './Account';
 
-function CustomNavbar() {
+export default function CustomNavbar() {
   const router = useRouter();
   const query = useSearchParams();
   const nav = query.get('nav');
@@ -65,5 +65,3 @@ function CustomNavbar() {
     </>
   );
 }
-
-export default CustomNavbar;
