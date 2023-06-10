@@ -41,7 +41,7 @@ function AccountInfo() {
           alignItems: 'center',
           justifyContent: 'center',
         }}
-        initial={{ opacity: 0, scale: 3 }}
+        initial={{ opacity: 0, scale: 1.2 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{
           ease: [0, 0.71, 0.2, 1.01],

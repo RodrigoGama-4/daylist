@@ -4,11 +4,13 @@ import { BsFillStarFill, BsFillPersonFill, BsStack } from 'react-icons/bs';
 import { useSearchParams, useRouter } from 'next/navigation';
 import NoteTree from './NoteTree';
 import AccountInfo from './Account';
+import { motion } from 'framer-motion';
 
 export default function CustomNavbar() {
   const router = useRouter();
   const query = useSearchParams();
   const nav = query.get('nav');
+  const buttonScale = 1.1;
 
   return (
     <>
@@ -20,32 +22,52 @@ export default function CustomNavbar() {
       >
         <Container>
           <Nav className="flex-column" style={{ position: 'absolute', top: 0 }}>
-            <Button onClick={() => console.log('futura logo')} className="mb-3">
-              <BsFillStarFill />
-            </Button>
-            <Button
-              onClick={() => {
-                router.push(nav !== 'account' ? '/?nav=account' : '/');
+            <motion.button
+              whileHover={{
+                scale: buttonScale,
               }}
-              className="mb-3"
+              onClick={() => console.log('futura logo')}
+              className="mb-3 btn btn-primary"
+            >
+              <BsFillStarFill />
+            </motion.button>
+            <motion.button
+              whileHover={{
+                scale: buttonScale,
+              }}
+              onClick={() => {
+                if (nav !== 'account') {
+                  router.push('/?nav=account');
+                } else {
+                  router.back();
+                }
+              }}
+              className="mb-3 btn btn-primary"
             >
               <BsFillPersonFill />
-            </Button>
+            </motion.button>
 
-            <Button
-              onClick={() => {
-                router.push(nav !== 'mynotes' ? '/?nav=mynotes' : '/');
+            <motion.button
+              whileHover={{
+                scale: buttonScale,
               }}
-              className="mb-3"
+              onClick={() => {
+                if (nav !== 'mynotes') {
+                  router.push('/?nav=mynotes');
+                } else {
+                  router.back();
+                }
+              }}
+              className="mb-3 btn btn-primary"
             >
               <BsStack />
-            </Button>
+            </motion.button>
           </Nav>
         </Container>
       </Navbar>
       {nav === 'mynotes' && <NoteTree />}
       {nav === 'account' && (
-        <div className="overlay" onClick={() => router.push('/')}>
+        <div className="overlay" onClick={() => router.back()}>
           <AccountInfo />
         </div>
       )}
