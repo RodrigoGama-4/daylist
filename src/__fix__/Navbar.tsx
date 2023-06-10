@@ -2,15 +2,13 @@ import React, { useState } from 'react';
 import { Navbar, Container, Nav, Button } from 'react-bootstrap';
 import { BsFillStarFill, BsFillPersonFill, BsStack } from 'react-icons/bs';
 import { useSearchParams, useRouter } from 'next/navigation';
-import CustomNoteTree from './notetree';
-import AccountInfo from './account';
-import { motion } from 'framer-motion';
+import NoteTree from './NoteTree';
+import AccountInfo from './Account';
 
-function CustomNavbar() {
+export default function CustomNavbar() {
   const router = useRouter();
   const query = useSearchParams();
   const nav = query.get('nav');
-  const scale_button = 1.1;
 
   return (
     <>
@@ -21,45 +19,33 @@ function CustomNavbar() {
         style={{ width: '4rem' }}
       >
         <Container>
-          <Nav className="flex-column" style={{ position: 'absolute', top: 5 }}>
-            <motion.button
-              onClick={() => console.log('futura logo')}
-              className="mb-3 btn btn-primary"
-              whileHover={{
-                scale: scale_button,
-              }}
-            >
+          <Nav className="flex-column" style={{ position: 'absolute', top: 0 }}>
+            <Button onClick={() => console.log('futura logo')} className="mb-3">
               <BsFillStarFill />
-            </motion.button>
-            <motion.button
+            </Button>
+            <Button
               onClick={() => {
                 router.push(nav !== 'account' ? '/?nav=account' : '/');
               }}
-              className="mb-3 btn btn-primary"
-              whileHover={{
-                scale: scale_button,
-              }}
+              className="mb-3"
             >
               <BsFillPersonFill />
-            </motion.button>
+            </Button>
 
-            <motion.button
+            <Button
               onClick={() => {
                 router.push(nav !== 'mynotes' ? '/?nav=mynotes' : '/');
               }}
-              className="mb-3 btn btn-primary"
-              whileHover={{
-                scale: scale_button,
-              }}
+              className="mb-3"
             >
               <BsStack />
-            </motion.button>
+            </Button>
           </Nav>
         </Container>
       </Navbar>
-      {nav === 'mynotes' && <CustomNoteTree />}
+      {nav === 'mynotes' && <NoteTree />}
       {nav === 'account' && (
-        <div className="overlay " onClick={() => router.push('/')}>
+        <div className="overlay" onClick={() => router.push('/')}>
           <AccountInfo />
         </div>
       )}
@@ -79,5 +65,3 @@ function CustomNavbar() {
     </>
   );
 }
-
-export default CustomNavbar;
