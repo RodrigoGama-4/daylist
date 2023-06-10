@@ -1,5 +1,5 @@
 'use client';
-import CustomNavbar from '@/src/components/Navbar';
+import CustomNavbar from '@/src/__fix__/Navbar';
 
 export default function Template({ children }: { children: React.ReactNode }) {
   return (
