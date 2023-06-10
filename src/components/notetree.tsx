@@ -1,17 +1,19 @@
 import React from 'react';
-import { Container } from 'react-bootstrap';
+import { motion } from 'framer-motion';
 
 const CustomNoteTree = () => {
   return (
-    <Container
+    <motion.div
       className="position-absolute d-flex align-items-center justify-content-center"
+      initial={{ x: -10 }}
+      animate={{ x: 0 }}
       style={{
         height: '100vh',
         border: '2px solid black',
         left: '4rem',
         padding: '7rem',
       }}
-    ></Container>
+    ></motion.div>
   );
 };
 
