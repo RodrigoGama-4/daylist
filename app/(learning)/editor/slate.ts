@@ -1,4 +1,4 @@
-import { BaseEditor } from 'slate';
+import { BaseEditor, BaseElement } from 'slate';
 import { ReactEditor } from 'slate-react';
 import { HistoryEditor } from 'slate-history';
 
@@ -24,10 +24,10 @@ export type CustomEditor = BaseEditor &
   ReactEditor &
   HistoryEditor & { type?: '__editor' };
 
-declare module 'slate' {
-  interface CustomTypes {
-    Editor: CustomEditor;
-    Element: ICustomElement;
-    Text: CustomText;
-  }
-}
+// declare module 'slate' {
+//   interface CustomTypes {
+//     Editor: CustomEditor;
+//     Element: ICustomElement;
+//     Text: CustomText;
+//   }
+// }
