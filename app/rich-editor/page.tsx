@@ -21,6 +21,20 @@ import {
   RenderElementProps,
   RenderLeafProps,
 } from 'slate-react';
+import {
+  BiBold,
+  BiItalic,
+  BiStrikethrough,
+  BiUnderline,
+  BiAlignLeft,
+  BiListOl,
+  BiListUl,
+  BiListCheck,
+  BiAlignRight,
+  BiAlignMiddle,
+  BiAlignJustify,
+} from 'react-icons/bi';
+import { MdAudioFile, MdImage, MdPlayArrow } from 'react-icons/md';
 
 export default function Page() {
   const [editor] = useState(() => withHistory(withReact(createEditor())));
@@ -31,7 +45,7 @@ export default function Page() {
     if (!db)
       setInitialValue([
         {
-          type: 'Paragraph',
+          type: 'paragraph',
           children: [{ text: 'A line of text in a paragraph.' }],
         },
       ]);
@@ -40,15 +54,15 @@ export default function Page() {
 
   const renderElement = useCallback((props: RenderElementProps) => {
     switch (props.element.type) {
-      case 'BulletList':
+      case 'bullet-list':
         return <BulletList {...props} />;
-      case 'NumberList':
+      case 'number-list':
         return <NumberList {...props} />;
-      case 'CheckList':
+      case 'check-list':
         return <CheckList {...props} />;
-      case 'Image':
+      case 'image':
         return <ImageElement {...props} />;
-      case 'Audio':
+      case 'audio':
         return <AudioElement {...props} />;
       default:
         return <Paragraph {...props} />;
@@ -67,7 +81,7 @@ export default function Page() {
         initialValue={initialValue}
         onChange={(value) => {
           const isAstChange = editor.operations.some(
-            (op) => 'set_selection' !== op.type,
+            (op) => 'set_selection' !== op.type, // if change was not a selection
           );
           if (isAstChange) {
             // Save the value to Local Storage.
@@ -85,11 +99,11 @@ export default function Page() {
               switch (event.key) {
                 case 'k':
                   event.preventDefault();
-                  CustomEditor.toggleBulletList(editor);
+                  CustomEditor.toggleBullet(editor);
                   break;
                 case 'b':
                   event.preventDefault();
-                  CustomEditor.toggleBoldMark(editor);
+                  CustomEditor.toggleBold(editor);
                   break;
               }
             }}
@@ -103,7 +117,7 @@ export default function Page() {
 
 // Define our own custom set of helpers.
 const CustomEditor = {
-  isBoldMarkActive(editor: CustomTypes['Editor']) {
+  isBold(editor: CustomTypes['Editor']) {
     const [match] = Editor.nodes(editor, {
       match: (n) => (n as CustomTypes['Text']).bold === true,
       universal: true,
@@ -111,8 +125,8 @@ const CustomEditor = {
     return !!match;
   },
 
-  toggleBoldMark(editor: CustomTypes['Editor']) {
-    const isActive = CustomEditor.isBoldMarkActive(editor);
+  toggleBold(editor: CustomTypes['Editor']) {
+    const isActive = CustomEditor.isBold(editor);
     Transforms.setNodes(
       editor,
       { bold: isActive ? undefined : true },
@@ -120,13 +134,13 @@ const CustomEditor = {
     );
   },
 
-  toggleBulletList(editor: CustomTypes['Editor']) {
+  toggleBullet(editor: CustomTypes['Editor']) {
     const [codeElement] = Editor.nodes(editor, {
-      match: (n: Node): n is CustomTypes['Element'] => n.type === 'BulletList',
+      match: (n: Node): n is CustomTypes['Element'] => n.type === 'bullet-list',
     });
     Transforms.setNodes(
       editor,
-      { type: codeElement ? 'Paragraph' : 'BulletList' },
+      { type: codeElement ? 'paragraph' : 'bullet-list' },
       {
         match: (n) => Element.isElement(n) && Editor.isBlock(editor, n),
       },
@@ -135,7 +149,32 @@ const CustomEditor = {
 };
 
 function Toolbar() {
-  const slate = useSlate();
-  const el = slate.children.at(0) as CustomTypes['Element'];
-  return <p>{el.children![0].text}</p>;
+  const editor = useSlate();
+  const el = editor.children.at(0) as CustomTypes['Element'];
+  // return <p>{el.children![0].text}</p>;
+  return (
+    <div className="px-2 flex space-x-2 [&>*]:rounded text-3xl text-slate-700 [&>div>*]:cursor-pointer">
+      <div className="flex space-x-1">
+        <BiBold />
+        <BiItalic />
+        <BiStrikethrough />
+        <BiUnderline />
+      </div>
+      <div className="flex space-x-1">
+        <BiListUl onClick={() => CustomEditor.toggleBullet(editor)} />
+        <BiListOl />
+        <BiListCheck />
+      </div>
+      <div className="flex space-x-1">
+        <BiAlignLeft />
+        <BiAlignRight />
+        <BiAlignMiddle />
+        <BiAlignJustify />
+      </div>
+      <div className="flex space-x-1">
+        <MdImage />
+        <MdAudioFile />
+      </div>
+    </div>
+  );
 }

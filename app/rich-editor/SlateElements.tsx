@@ -15,6 +15,7 @@ export function BulletList({ children, attributes }: RenderElementProps) {
       }}
     >
       {Children.map(children, (child) => (
+        // FIXME bold corta li em 2
         <li>{child}</li>
       ))}
     </ul>
@@ -22,7 +23,18 @@ export function BulletList({ children, attributes }: RenderElementProps) {
 }
 
 export function NumberList({ children, attributes }: RenderElementProps) {
-  return <ol {...attributes}>{children}</ol>;
+  return (
+    <ol
+      {...attributes}
+      style={{
+        listStyleType: 'lower-alpha',
+      }}
+    >
+      {Children.map(children, (child) => (
+        <li>{child}</li>
+      ))}
+    </ol>
+  );
 }
 
 export function CheckList({ children, attributes }: RenderElementProps) {

@@ -13,35 +13,37 @@ export type RichText = {
 };
 
 export interface Paragraph {
-  type: 'Paragraph';
+  type: 'paragraph';
   children: RichText[];
-  justify?: 'left' | 'center' | 'right' | 'even';
+  align?: 'left' | 'center' | 'right' | 'justify';
   header?: 1 | 2 | 3;
 }
 
 export interface BulletList {
-  type: 'BulletList';
+  type: 'bullet-list';
   children: RichText[];
 }
 
 export interface NumberList {
-  type: 'NumberList';
+  type: 'number-list';
   children: RichText[];
 }
 
 export interface CheckList {
-  type: 'CheckList';
+  type: 'check-list';
   children: RichText[];
 }
 
 export interface Image {
-  type: 'Image';
-  children: null;
+  type: 'image';
+  url: string;
+  children?: null;
 }
 
 export interface Audio {
-  type: 'Audio';
-  children: null;
+  type: 'audio';
+  url: string;
+  children?: null;
 }
 
 export type CustomElement =
