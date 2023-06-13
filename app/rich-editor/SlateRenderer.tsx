@@ -36,14 +36,13 @@ export const ElementRenderer = ({
       );
     case 'check-item':
       return (
-        <ListGroup.Item
-          {...attributes}
-          as="li"
-          className="space-x-3"
-          contentEditable={false} // fixes firefox input not changing
-        >
-          <Form.Check className="inline" />
-          <span contentEditable={true}>{children}</span>
+        <ListGroup.Item {...attributes} as="li" className="space-x-3">
+          <span
+            contentEditable={false} // fixes firefox input not changing
+          >
+            <Form.Check className="inline" />
+          </span>
+          {children}
         </ListGroup.Item>
       );
     case 'paragraph':
