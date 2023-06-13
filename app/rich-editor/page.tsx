@@ -37,7 +37,11 @@ export default function Page() {
 
   if (!initialValue) return;
   return (
-    <div>
+    <div
+      style={{
+        fontFamily: 'Roboto, sans-serif',
+      }}
+    >
       {/* Slate context provider */}
       <Slate
         editor={editor}

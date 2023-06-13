@@ -79,12 +79,16 @@ export default function Toolbar() {
 
 // helpers
 
-const LIST_TYPES = ['number-list', 'bullet-list'];
+const LIST_TYPES = [
+  'number-list',
+  'bullet-list',
+  'check-list',
+] as Element['type'][];
 
 const Teste = {
   toggleBlock: (editor: Editor, type: Element['type']) => {
     const isList = LIST_TYPES.includes(type);
-    const isBlock = Teste.isBlockActive(editor, type);
+    const isActive = Teste.isActive(editor, type);
 
     Transforms.unwrapNodes(editor, {
       match: (n) =>
@@ -94,10 +98,16 @@ const Teste = {
       split: true,
     });
     let newProperties: Partial<Element> = {
-      type: isBlock ? 'paragraph' : isList ? 'list-item' : type,
+      type: isActive
+        ? 'paragraph'
+        : isList
+        ? type === 'check-list'
+          ? 'check-item'
+          : 'list-item'
+        : type,
     };
     Transforms.setNodes<Element>(editor, newProperties);
-    if (!isBlock && isList) {
+    if (!isActive && isList) {
       const block = { type: type, children: [] } as Element;
       Transforms.wrapNodes(editor, block);
     }
@@ -111,23 +121,15 @@ const Teste = {
       if (!(e.type === 'paragraph')) return format;
       if (e.align && e.align === format.align)
         format = { ...format, align: undefined };
-      // if (e.header && e.header === format.header)
-      //   { ...format, header: undefined }
       if (format.header)
         format = {
           ...format,
-          header: (e.header ? (e.header > 0 ? e.header - 1 : undefined) : 3) as
-            | 1
-            | 2
-            | 3
-            | undefined,
+          header: (e.header
+            ? e.header > 0
+              ? e.header - 1
+              : undefined
+            : 3) as (typeof format)['header'],
         };
-      // if (e.header && e.header < 3) format = { ...format, header: undefined };
-      // else
-      //   format = {
-      //     ...format,
-      //     header: !e.header ? 1 : ((e.header! + 1) as 2 | 3),
-      //   };
       return format;
     });
 
@@ -135,6 +137,7 @@ const Teste = {
       match: (n) => Element.isElement(n) && n.type === 'paragraph',
     });
   },
+
   query: function <T>(editor: Editor, map: (e: Element) => T) {
     const [result] = Array.from(
       editor.nodes<Element>({
@@ -144,7 +147,8 @@ const Teste = {
     // if (!result) return null;
     return map(result[0]);
   },
-  isBlockActive: (editor: Editor, type: Element['type']) => {
+
+  isActive: (editor: Editor, type: Element['type']) => {
     const { selection } = editor;
     if (!selection) return false;
     const [match] = Array.from(

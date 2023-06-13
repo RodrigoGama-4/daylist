@@ -1,4 +1,5 @@
 import { RenderElementProps, RenderLeafProps } from 'slate-react';
+import { Children } from 'react';
 
 export const ElementRenderer = ({
   attributes,
@@ -30,6 +31,24 @@ export const ElementRenderer = ({
       );
     case 'list-item':
       return <li {...attributes}>{children}</li>;
+    case 'check-list':
+      return (
+        <ul
+          {...attributes}
+          style={{
+            listStyleType: 'none',
+          }}
+        >
+          {children}
+        </ul>
+      );
+    case 'check-item':
+      return (
+        <li {...attributes} className="space-x-2">
+          <input type="checkbox" />
+          <span>{children}</span>
+        </li>
+      );
     case 'paragraph':
       const style = { textAlign: element.align };
       if (!element.header)
@@ -41,26 +60,39 @@ export const ElementRenderer = ({
       return {
         1: (
           <div>
-            <h1 {...attributes}>{children}</h1>
+            <h1 {...attributes} className="text-2xl">
+              {children}
+            </h1>
           </div>
         ),
         2: (
           <div>
-            <h2 {...attributes}>{children}</h2>
+            <h2 className="text-xl" {...attributes}>
+              {children}
+            </h2>
           </div>
         ),
         3: (
           <div>
-            <h3 {...attributes}>{children}</h3>
+            <h3 className="text-lg" {...attributes}>
+              {children}
+            </h3>
           </div>
         ),
       }[element.header];
-    case 'check-list':
-      return <p {...attributes}>TODO: checklist</p>;
+
     case 'image':
-      return <p {...attributes}>TODO: image</p>;
+      return (
+        <p {...attributes} className="bg-red-950 text-red-300">
+          TODO: image
+        </p>
+      );
     case 'audio':
-      return <p {...attributes}>TODO: audio</p>;
+      return (
+        <p {...attributes} className="bg-red-950 text-red-300">
+          TODO: audio
+        </p>
+      );
     default:
       throw new Error(`O tipo não foi adicionado`);
   }

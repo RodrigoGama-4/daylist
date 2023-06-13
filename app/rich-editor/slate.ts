@@ -20,6 +20,7 @@ interface BulletList extends CommonProps<'bullet-list'> {}
 interface NumberList extends CommonProps<'number-list'> {}
 interface ListItem extends CommonProps<'list-item'> {}
 interface CheckList extends CommonProps<'check-list'> {}
+interface CheckItem extends CommonProps<'check-item'> {}
 export interface Paragraph extends CommonProps<'paragraph'> {
   align?: 'left' | 'center' | 'right' | 'justify';
   header?: 1 | 2 | 3;
@@ -37,6 +38,7 @@ export type CustomElement =
   | NumberList
   | ListItem
   | CheckList
+  | CheckItem
   | Image
   | Audio;
 export type CustomEditor = BaseEditor & ReactEditor & HistoryEditor;
