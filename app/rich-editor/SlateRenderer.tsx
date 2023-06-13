@@ -1,59 +1,60 @@
-import { RenderElementProps, RenderLeafProps } from 'slate-react';
-import { Children } from 'react';
+import { RenderElementProps, RenderLeafProps, useSlate } from 'slate-react';
+import ListGroup from 'react-bootstrap/ListGroup';
+import Form from 'react-bootstrap/Form';
+import { CustomEditor } from './Toolbar';
 
 export const ElementRenderer = ({
   attributes,
   children,
   element,
 }: RenderElementProps) => {
+  const editor = useSlate();
   switch (element.type) {
     case 'bullet-list':
       return (
-        <ul
-          {...attributes}
-          style={{
-            listStyleType: 'square',
-          }}
-        >
+        <ListGroup {...attributes} as="ul">
           {children}
-        </ul>
+        </ListGroup>
       );
     case 'number-list':
       return (
-        <ol
-          {...attributes}
-          style={{
-            listStyleType: 'alpha',
-          }}
-        >
+        <ListGroup {...attributes} as="ol" numbered>
           {children}
-        </ol>
+        </ListGroup>
       );
     case 'list-item':
-      return <li {...attributes}>{children}</li>;
+      return (
+        <ListGroup.Item {...attributes} as="li" className="space-x-3">
+          {children}
+        </ListGroup.Item>
+      );
     case 'check-list':
       return (
-        <ul
-          {...attributes}
-          style={{
-            listStyleType: 'none',
-          }}
-        >
+        <ListGroup as="ul" {...attributes}>
           {children}
-        </ul>
+        </ListGroup>
       );
     case 'check-item':
       return (
-        <li {...attributes} className="space-x-2">
-          <input type="checkbox" />
-          <span>{children}</span>
-        </li>
+        <ListGroup.Item
+          {...attributes}
+          as="li"
+          className="space-x-3"
+          contentEditable={false} // fixes firefox input not changing
+        >
+          <Form.Check className="inline" />
+          <span contentEditable={true}>{children}</span>
+        </ListGroup.Item>
       );
     case 'paragraph':
       const style = { textAlign: element.align };
       if (!element.header)
         return (
-          <p style={style} {...attributes}>
+          <p
+            {...attributes}
+            style={{ ...style, lineHeight: 1.2 }}
+            className="my-1"
+          >
             {children}
           </p>
         );

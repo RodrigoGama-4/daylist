@@ -20,7 +20,9 @@ interface BulletList extends CommonProps<'bullet-list'> {}
 interface NumberList extends CommonProps<'number-list'> {}
 interface ListItem extends CommonProps<'list-item'> {}
 interface CheckList extends CommonProps<'check-list'> {}
-interface CheckItem extends CommonProps<'check-item'> {}
+interface CheckItem extends CommonProps<'check-item'> {
+  checked?: true;
+}
 export interface Paragraph extends CommonProps<'paragraph'> {
   align?: 'left' | 'center' | 'right' | 'justify';
   header?: 1 | 2 | 3;

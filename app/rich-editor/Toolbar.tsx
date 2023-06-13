@@ -30,48 +30,62 @@ export default function Toolbar() {
     <div className="px-2 flex space-x-2 [&>*]:rounded text-3xl text-slate-700 [&>div>*]:cursor-pointer">
       <div className="flex space-x-1">
         <BsCardHeading
-          onClick={() => Teste.toggleParagraphProp(editor, { header: 1 })}
+          onClick={() =>
+            CustomEditor.toggleParagraphProp(editor, { header: 1 })
+          }
         />
       </div>
       <div className="flex space-x-1">
-        <MdFormatBold onClick={() => Teste.toggleMark(editor, 'bold')} />
-        <MdFormatItalic onClick={() => Teste.toggleMark(editor, 'italic')} />
+        <MdFormatBold onClick={() => CustomEditor.toggleMark(editor, 'bold')} />
+        <MdFormatItalic
+          onClick={() => CustomEditor.toggleMark(editor, 'italic')}
+        />
         <MdFormatStrikethrough
-          onClick={() => Teste.toggleMark(editor, 'strike')}
+          onClick={() => CustomEditor.toggleMark(editor, 'strike')}
         />
         <MdFormatUnderlined
-          onClick={() => Teste.toggleMark(editor, 'underline')}
+          onClick={() => CustomEditor.toggleMark(editor, 'underline')}
         />
       </div>
       <div className="flex space-x-1">
         <MdFormatListBulleted
-          onClick={() => Teste.toggleBlock(editor, 'bullet-list')}
+          onClick={() => CustomEditor.toggleBlock(editor, 'bullet-list')}
         />
         <MdFormatListNumbered
-          onClick={() => Teste.toggleBlock(editor, 'number-list')}
+          onClick={() => CustomEditor.toggleBlock(editor, 'number-list')}
         />
-        <MdChecklist onClick={() => Teste.toggleBlock(editor, 'check-list')} />
+        <MdChecklist
+          onClick={() => CustomEditor.toggleBlock(editor, 'check-list')}
+        />
       </div>
       <div className="flex space-x-1">
         <BiAlignLeft
-          onClick={() => Teste.toggleParagraphProp(editor, { align: 'left' })}
+          onClick={() =>
+            CustomEditor.toggleParagraphProp(editor, { align: 'left' })
+          }
         />
         <BiAlignMiddle
-          onClick={() => Teste.toggleParagraphProp(editor, { align: 'center' })}
+          onClick={() =>
+            CustomEditor.toggleParagraphProp(editor, { align: 'center' })
+          }
         />
         <BiAlignRight
-          onClick={() => Teste.toggleParagraphProp(editor, { align: 'right' })}
+          onClick={() =>
+            CustomEditor.toggleParagraphProp(editor, { align: 'right' })
+          }
         />
         <BiAlignJustify
           onClick={() =>
-            Teste.toggleParagraphProp(editor, { align: 'justify' })
+            CustomEditor.toggleParagraphProp(editor, { align: 'justify' })
           }
         />
       </div>
 
       <div className="flex space-x-1">
-        <MdImage onClick={() => Teste.toggleBlock(editor, 'image')} />
-        <MdAudiotrack onClick={() => Teste.toggleBlock(editor, 'audio')} />
+        <MdImage onClick={() => CustomEditor.toggleBlock(editor, 'image')} />
+        <MdAudiotrack
+          onClick={() => CustomEditor.toggleBlock(editor, 'audio')}
+        />
       </div>
     </div>
   );
@@ -85,10 +99,10 @@ const LIST_TYPES = [
   'check-list',
 ] as Element['type'][];
 
-const Teste = {
+export const CustomEditor = {
   toggleBlock: (editor: Editor, type: Element['type']) => {
     const isList = LIST_TYPES.includes(type);
-    const isActive = Teste.isActive(editor, type);
+    const isActive = CustomEditor.isActive(editor, type);
 
     Transforms.unwrapNodes(editor, {
       match: (n) =>
@@ -117,7 +131,7 @@ const Teste = {
     editor: Editor,
     format: Pick<Paragraph, 'header' | 'align'>,
   ) => {
-    format = Teste.query<typeof format>(editor, (e) => {
+    format = CustomEditor.query<typeof format>(editor, (e) => {
       if (!(e.type === 'paragraph')) return format;
       if (e.align && e.align === format.align)
         format = { ...format, align: undefined };
@@ -138,7 +152,7 @@ const Teste = {
     });
   },
 
-  query: function <T>(editor: Editor, map: (e: Element) => T) {
+  query<T>(editor: Editor, map: (e: Element) => T) {
     const [result] = Array.from(
       editor.nodes<Element>({
         match: (n) => !Editor.isEditor(n) && Element.isElement(n) && !!map(n),
@@ -146,6 +160,10 @@ const Teste = {
     );
     // if (!result) return null;
     return map(result[0]);
+  },
+
+  updateElement(editor: Editor, newProps: Partial<Element>) {
+    Transforms.setNodes<Element>(editor, newProps);
   },
 
   isActive: (editor: Editor, type: Element['type']) => {
@@ -166,7 +184,7 @@ const Teste = {
     return (marks && marks[mark]) || false;
   },
   toggleMark: (editor: Editor, mark: keyof Omit<Text, 'text' | 'color'>) => {
-    const isActive = Teste.isMarkActive(editor, mark);
+    const isActive = CustomEditor.isMarkActive(editor, mark);
     if (isActive) Editor.removeMark(editor, mark);
     else Editor.addMark(editor, mark, true);
   },
