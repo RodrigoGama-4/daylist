@@ -1,6 +1,6 @@
 'use client';
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import { ElementRenderer, CustomLeaf } from './SlateElements';
+import { ElementRenderer, CustomLeaf } from './SlateRenderer';
 
 import { createEditor, Descendant, CustomTypes } from 'slate';
 import { withHistory } from 'slate-history';
@@ -57,8 +57,7 @@ export default function Page() {
           <Editable
             renderElement={renderElement}
             renderLeaf={renderLeaf}
-            placeholder="Enter some rich text…"
-            spellCheck
+            placeholder="Algo a fazer..."
             autoFocus
           />
         </div>

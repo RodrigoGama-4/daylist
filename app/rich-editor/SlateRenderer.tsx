@@ -1,11 +1,3 @@
-import { Children } from 'react';
-import {
-  BsPlayBtn,
-  BsImage,
-  BsTypeH1,
-  BsTypeH2,
-  BsTypeH3,
-} from 'react-icons/bs';
 import { RenderElementProps, RenderLeafProps } from 'slate-react';
 
 export const ElementRenderer = ({
@@ -64,11 +56,11 @@ export const ElementRenderer = ({
         ),
       }[element.header];
     case 'check-list':
-      return <p>TODO: checklist</p>;
+      return <p {...attributes}>TODO: checklist</p>;
     case 'image':
-      return <p>TODO: image</p>;
+      return <p {...attributes}>TODO: image</p>;
     case 'audio':
-      return <p>TODO: audio</p>;
+      return <p {...attributes}>TODO: audio</p>;
     default:
       throw new Error(`O tipo não foi adicionado`);
   }

@@ -1,48 +1,66 @@
 import { useSlate } from 'slate-react';
 import { Editor, Transforms, Element, Node, Text } from 'slate';
-
+import { BiHeading } from 'react-icons/bi';
 import {
-  BiBold,
-  BiItalic,
-  BiStrikethrough,
-  BiUnderline,
   BiAlignLeft,
-  BiListOl,
-  BiListUl,
-  BiListCheck,
   BiAlignRight,
   BiAlignMiddle,
   BiAlignJustify,
 } from 'react-icons/bi';
-import { BsTypeH1, BsTypeH2, BsTypeH3 } from 'react-icons/bs';
-
-import { MdAudioFile, MdImage, MdPlayArrow } from 'react-icons/md';
-import { CustomElement, Paragraph } from './slate';
+import { LuHeading, LuHeading2, LuHeading3 } from 'react-icons/lu';
+import {
+  MdAudioFile,
+  MdFormatListBulleted,
+  MdFormatListNumbered,
+  MdChecklist,
+  MdAudiotrack,
+  MdImage,
+  MdFormatUnderlined,
+  MdFormatStrikethrough,
+  MdFormatItalic,
+  MdFormatBold,
+} from 'react-icons/md';
+import { Paragraph } from './slate';
+import _ from 'lodash';
+import { BsCardHeading } from 'react-icons/bs';
 
 export default function Toolbar() {
   const editor = useSlate();
   return (
     <div className="px-2 flex space-x-2 [&>*]:rounded text-3xl text-slate-700 [&>div>*]:cursor-pointer">
       <div className="flex space-x-1">
-        <BiBold onClick={() => Teste.toggleMark(editor, 'bold')} />
-        <BiItalic onClick={() => Teste.toggleMark(editor, 'italic')} />
-        <BiStrikethrough onClick={() => Teste.toggleMark(editor, 'strike')} />
-        <BiUnderline onClick={() => Teste.toggleMark(editor, 'underline')} />
+        <BsCardHeading
+          onClick={() => Teste.toggleParagraphProp(editor, { header: 1 })}
+        />
       </div>
       <div className="flex space-x-1">
-        <BiListUl onClick={() => Teste.toggleBlock(editor, 'bullet-list')} />
-        <BiListOl onClick={() => Teste.toggleBlock(editor, 'number-list')} />
-        <BiListCheck onClick={() => Teste.toggleBlock(editor, 'check-list')} />
+        <MdFormatBold onClick={() => Teste.toggleMark(editor, 'bold')} />
+        <MdFormatItalic onClick={() => Teste.toggleMark(editor, 'italic')} />
+        <MdFormatStrikethrough
+          onClick={() => Teste.toggleMark(editor, 'strike')}
+        />
+        <MdFormatUnderlined
+          onClick={() => Teste.toggleMark(editor, 'underline')}
+        />
+      </div>
+      <div className="flex space-x-1">
+        <MdFormatListBulleted
+          onClick={() => Teste.toggleBlock(editor, 'bullet-list')}
+        />
+        <MdFormatListNumbered
+          onClick={() => Teste.toggleBlock(editor, 'number-list')}
+        />
+        <MdChecklist onClick={() => Teste.toggleBlock(editor, 'check-list')} />
       </div>
       <div className="flex space-x-1">
         <BiAlignLeft
           onClick={() => Teste.toggleParagraphProp(editor, { align: 'left' })}
         />
-        <BiAlignRight
-          onClick={() => Teste.toggleParagraphProp(editor, { align: 'right' })}
-        />
         <BiAlignMiddle
           onClick={() => Teste.toggleParagraphProp(editor, { align: 'center' })}
+        />
+        <BiAlignRight
+          onClick={() => Teste.toggleParagraphProp(editor, { align: 'right' })}
         />
         <BiAlignJustify
           onClick={() =>
@@ -50,20 +68,10 @@ export default function Toolbar() {
           }
         />
       </div>
-      <div className="flex space-x-1">
-        <BsTypeH1
-          onClick={() => Teste.toggleParagraphProp(editor, { header: 1 })}
-        />
-        <BsTypeH2
-          onClick={() => Teste.toggleParagraphProp(editor, { header: 2 })}
-        />
-        <BsTypeH3
-          onClick={() => Teste.toggleParagraphProp(editor, { header: 3 })}
-        />
-      </div>
+
       <div className="flex space-x-1">
         <MdImage onClick={() => Teste.toggleBlock(editor, 'image')} />
-        <MdAudioFile onClick={() => Teste.toggleBlock(editor, 'audio')} />
+        <MdAudiotrack onClick={() => Teste.toggleBlock(editor, 'audio')} />
       </div>
     </div>
   );
@@ -88,7 +96,7 @@ const Teste = {
     let newProperties: Partial<Element> = {
       type: isBlock ? 'paragraph' : isList ? 'list-item' : type,
     };
-    Transforms.setNodes(editor, newProperties);
+    Transforms.setNodes<Element>(editor, newProperties);
     if (!isBlock && isList) {
       const block = { type: type, children: [] } as Element;
       Transforms.wrapNodes(editor, block);
@@ -99,10 +107,43 @@ const Teste = {
     editor: Editor,
     format: Pick<Paragraph, 'header' | 'align'>,
   ) => {
-    if (!Teste.isBlockActive(editor, 'paragraph')) return;
-    Transforms.setNodes(editor, { ...format });
-  },
+    format = Teste.query<typeof format>(editor, (e) => {
+      if (!(e.type === 'paragraph')) return format;
+      if (e.align && e.align === format.align)
+        format = { ...format, align: undefined };
+      // if (e.header && e.header === format.header)
+      //   { ...format, header: undefined }
+      if (format.header)
+        format = {
+          ...format,
+          header: (e.header ? (e.header > 0 ? e.header - 1 : undefined) : 3) as
+            | 1
+            | 2
+            | 3
+            | undefined,
+        };
+      // if (e.header && e.header < 3) format = { ...format, header: undefined };
+      // else
+      //   format = {
+      //     ...format,
+      //     header: !e.header ? 1 : ((e.header! + 1) as 2 | 3),
+      //   };
+      return format;
+    });
 
+    Transforms.setNodes<Paragraph>(editor, format, {
+      match: (n) => Element.isElement(n) && n.type === 'paragraph',
+    });
+  },
+  query: function <T>(editor: Editor, map: (e: Element) => T) {
+    const [result] = Array.from(
+      editor.nodes<Element>({
+        match: (n) => !Editor.isEditor(n) && Element.isElement(n) && !!map(n),
+      }),
+    );
+    // if (!result) return null;
+    return map(result[0]);
+  },
   isBlockActive: (editor: Editor, type: Element['type']) => {
     const { selection } = editor;
     if (!selection) return false;
