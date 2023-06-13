@@ -1,77 +1,91 @@
 import { Children } from 'react';
-import { BsPlayBtn, BsImage } from 'react-icons/bs';
+import {
+  BsPlayBtn,
+  BsImage,
+  BsTypeH1,
+  BsTypeH2,
+  BsTypeH3,
+} from 'react-icons/bs';
 import { RenderElementProps, RenderLeafProps } from 'slate-react';
 
-export function Paragraph({ children, attributes }: RenderElementProps) {
-  return <p {...attributes}>{children}</p>;
-}
-
-export function BulletList({ children, attributes }: RenderElementProps) {
-  return (
-    <ul
-      {...attributes}
-      style={{
-        listStyleType: 'square',
-      }}
-    >
-      {Children.map(children, (child) => (
-        // FIXME bold corta li em 2
-        <li>{child}</li>
-      ))}
-    </ul>
-  );
-}
-
-export function NumberList({ children, attributes }: RenderElementProps) {
-  return (
-    <ol
-      {...attributes}
-      style={{
-        listStyleType: 'lower-alpha',
-      }}
-    >
-      {Children.map(children, (child) => (
-        <li>{child}</li>
-      ))}
-    </ol>
-  );
-}
-
-export function CheckList({ children, attributes }: RenderElementProps) {
-  return (
-    <div {...attributes} className="bg-slate-400">
-      {children}
-    </div>
-  );
-}
-
-export function ImageElement({ children, attributes }: RenderElementProps) {
-  return (
-    <div
-      {...attributes}
-      className="outline outline-1 outline-black rounded shadow-sm"
-    >
-      <BsImage />
-      {children}
-    </div>
-  );
-}
-
-export function AudioElement({ children, attributes }: RenderElementProps) {
-  return (
-    <div
-      {...attributes}
-      className="outline outline-1 outline-black rounded shadow-sm"
-    >
-      <BsPlayBtn />
-      {children}
-    </div>
-  );
-}
+export const ElementRenderer = ({
+  attributes,
+  children,
+  element,
+}: RenderElementProps) => {
+  switch (element.type) {
+    case 'bullet-list':
+      return (
+        <ul
+          {...attributes}
+          style={{
+            listStyleType: 'square',
+          }}
+        >
+          {children}
+        </ul>
+      );
+    case 'number-list':
+      return (
+        <ol
+          {...attributes}
+          style={{
+            listStyleType: 'alpha',
+          }}
+        >
+          {children}
+        </ol>
+      );
+    case 'list-item':
+      return <li {...attributes}>{children}</li>;
+    case 'paragraph':
+      const style = { textAlign: element.align };
+      if (!element.header)
+        return (
+          <p style={style} {...attributes}>
+            {children}
+          </p>
+        );
+      return {
+        1: (
+          <div>
+            <h1 {...attributes}>{children}</h1>
+          </div>
+        ),
+        2: (
+          <div>
+            <h2 {...attributes}>{children}</h2>
+          </div>
+        ),
+        3: (
+          <div>
+            <h3 {...attributes}>{children}</h3>
+          </div>
+        ),
+      }[element.header];
+    case 'check-list':
+      return <p>TODO: checklist</p>;
+    case 'image':
+      return <p>TODO: image</p>;
+    case 'audio':
+      return <p>TODO: audio</p>;
+    default:
+      throw new Error(`O tipo não foi adicionado`);
+  }
+};
 
 export function CustomLeaf({ children, attributes, leaf }: RenderLeafProps) {
+  if (leaf.bold) children = <strong>{children}</strong>;
+  if (leaf.italic) children = <em>{children}</em>;
+  if (leaf.underline) children = <u>{children}</u>;
+  if (leaf.strike) children = <del>{children}</del>;
   return (
-    <span {...attributes} style={{ fontWeight: leaf.bold ? 'bold' : 'normal' }}>
+    <span
+      {...attributes}
+      style={{
+        color: leaf.color || 'unset',
+      }}
+    >
       {children}
     </span>
   );

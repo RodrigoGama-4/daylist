@@ -3,7 +3,6 @@ import { ReactEditor } from 'slate-react';
 import { HistoryEditor } from 'slate-history';
 
 export type RichText = {
-  type?: null;
   text: string;
   bold?: true;
   italic?: true;
@@ -12,50 +11,35 @@ export type RichText = {
   color?: string;
 };
 
-export interface Paragraph {
-  type: 'paragraph';
-  children: RichText[];
+interface CommonProps<T extends string> {
+  type: T;
+  children?: RichText[];
+}
+
+interface BulletList extends CommonProps<'bullet-list'> {}
+interface NumberList extends CommonProps<'number-list'> {}
+interface ListItem extends CommonProps<'list-item'> {}
+interface CheckList extends CommonProps<'check-list'> {}
+export interface Paragraph extends CommonProps<'paragraph'> {
   align?: 'left' | 'center' | 'right' | 'justify';
   header?: 1 | 2 | 3;
 }
-
-export interface BulletList {
-  type: 'bullet-list';
-  children: RichText[];
-}
-
-export interface NumberList {
-  type: 'number-list';
-  children: RichText[];
-}
-
-export interface CheckList {
-  type: 'check-list';
-  children: RichText[];
-}
-
-export interface Image {
-  type: 'image';
+interface Image extends CommonProps<'image'> {
   url: string;
-  children?: null;
 }
-
-export interface Audio {
-  type: 'audio';
+interface Audio extends CommonProps<'audio'> {
   url: string;
-  children?: null;
 }
 
 export type CustomElement =
   | Paragraph
   | BulletList
   | NumberList
+  | ListItem
   | CheckList
   | Image
   | Audio;
-export type CustomEditor = BaseEditor &
-  ReactEditor &
-  HistoryEditor & { type?: null };
+export type CustomEditor = BaseEditor & ReactEditor & HistoryEditor;
 
 declare module 'slate' {
   interface CustomTypes {
