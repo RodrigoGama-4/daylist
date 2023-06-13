@@ -1,63 +1,49 @@
-import React, { useState } from 'react';
-import { OverlayTrigger, Popover, Button } from 'react-bootstrap';
+import React from 'react';
+import Image from 'next/image';
+import ImgPadraoUsuario from './img/imagemuser.png';
+import ImgButtonSign from './img/signgoogle.png';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-function UserLogin() {
-  const [showPopover, setShowPopover] = useState(true);
-
-  const togglePopover = () => {
-    setShowPopover(!showPopover);
-  };
-
-  const popover = (
-    <Popover id="user-login-popover" className="custom-popover">
-      <Popover.Header as="h3">Faça login</Popover.Header>
-      <Popover.Body>
-        <Button variant="primary" size="lg">
-          Logar com Google
-        </Button>
-      </Popover.Body>
-    </Popover>
-  );
-
+const Login = () => {
   return (
-    <>
-      {showPopover && (
-        <div className="overlay" onClick={togglePopover}>
-          <div
-            className="popover-container"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {popover}
-          </div>
+    <div className="login-wrapper">
+      <div className="login-container d-flex flex-column align-items-center justify-content-center">
+        <div className="image-container mb-5">
+          <Image
+            src={ImgPadraoUsuario}
+            alt="Imagem de usuário"
+            width={180}
+            height={180}
+          />
         </div>
-      )}
+        <button>
+          <Image
+            src={ImgButtonSign}
+            alt="botao entrar google"
+            width={180}
+            height={130}
+          />
+        </button>
+      </div>
+
       <style jsx>{`
-        .overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background-color: rgba(0, 0, 0, 0.5);
+        .login-wrapper {
           display: flex;
-          align-items: center;
           justify-content: center;
+          align-items: center;
+          height: 100vh;
         }
 
-        .popover-container {
-          width: 50vw;
-          height: 60vh;
-          background-color: #fff;
-          padding: 20px;
+        .login-container {
+          border: 1px solid black;
           border-radius: 10px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
+          padding: 20px;
+          height: 60vh;
+          width: 40vw;
         }
       `}</style>
-    </>
+    </div>
   );
-}
+};
 
-export default UserLogin;
+export default Login;
