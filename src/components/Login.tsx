@@ -1,29 +1,16 @@
 import React from 'react';
 import Image from 'next/image';
-import ImgPadraoUsuario from './img/imagemuser.png';
-import ImgButtonSign from './img/signgoogle.png';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { BsFillPersonFill } from 'react-icons/bs';
 
 const Login = () => {
   return (
     <div className="login-wrapper">
       <div className="login-container d-flex flex-column align-items-center justify-content-center">
-        <div className="image-container mb-5">
-          <Image
-            src={ImgPadraoUsuario}
-            alt="Imagem de usuário"
-            width={180}
-            height={180}
-          />
+        <div className="mb-5">
+          <BsFillPersonFill size={120} />
         </div>
-        <button>
-          <Image
-            src={ImgButtonSign}
-            alt="botao entrar google"
-            width={180}
-            height={130}
-          />
-        </button>
+        <button className="btn btn-primary">entrar com google</button>
       </div>
 
       <style jsx>{`
