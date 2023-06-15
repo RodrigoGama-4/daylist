@@ -15,6 +15,12 @@ const typeDefs = gql`
     hello: String!
     world: String!
   }
+
+  type Note {
+    id: ID!
+    content: String! # serialized Descendant[]
+    priority: String!
+  }
 `;
 
 export default typeDefs;

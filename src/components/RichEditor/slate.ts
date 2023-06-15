@@ -27,6 +27,9 @@ export interface Paragraph extends CommonProps<'paragraph'> {
   align?: 'left' | 'center' | 'right' | 'justify';
   header?: 1 | 2 | 3;
 }
+export interface NoteTitle extends Omit<Paragraph, 'header' | 'type'> {
+  type: 'note-title';
+}
 interface Image extends CommonProps<'image'> {
   url: string;
 }
@@ -36,6 +39,7 @@ interface Audio extends CommonProps<'audio'> {
 
 export type CustomElement =
   | Paragraph
+  | NoteTitle
   | BulletList
   | NumberList
   | ListItem
