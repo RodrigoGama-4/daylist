@@ -3,7 +3,7 @@ import { useQuery } from '@apollo/client';
 import { graphql } from '@/graphql/types';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import Mural from '@/src/components/novo mural/Mural';
+import Mural from '@/src/components/Mural/Mural';
 
 const GET_DATA = graphql(`
   query Query {
