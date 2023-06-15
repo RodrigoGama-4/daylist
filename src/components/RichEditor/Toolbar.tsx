@@ -107,19 +107,19 @@ export default function Toolbar() {
       <ButtonGroup>
         <Button
           variant={variant}
-          onClick={() => EditorCmd.toggleBlock(editor, 'bullet-list')}
+          onClick={() => EditorCmd.toggleType(editor, 'bullet-list')}
         >
           <MdFormatListBulleted />
         </Button>
         <Button
           variant={variant}
-          onClick={() => EditorCmd.toggleBlock(editor, 'number-list')}
+          onClick={() => EditorCmd.toggleType(editor, 'number-list')}
         >
           <MdFormatListNumbered />
         </Button>
         <Button
           variant={variant}
-          onClick={() => EditorCmd.toggleBlock(editor, 'check-list')}
+          onClick={() => EditorCmd.toggleType(editor, 'check-list')}
         >
           <MdChecklist />
         </Button>
@@ -128,13 +128,14 @@ export default function Toolbar() {
       <ButtonGroup>
         <Button
           variant={variant}
-          onClick={() => EditorCmd.toggleBlock(editor, 'image')}
+          onClick={() => EditorCmd.toggleType(editor, 'image')}
         >
           <MdImage />
         </Button>
         <Button
           variant={variant}
-          onClick={() => EditorCmd.toggleBlock(editor, 'audio')}
+          // onClick={() => EditorCmd.toggleBlock(editor, 'audio')}
+          onClick={() => EditorCmd.toggleType(editor, 'note-title')}
         >
           <MdAudiotrack />
         </Button>

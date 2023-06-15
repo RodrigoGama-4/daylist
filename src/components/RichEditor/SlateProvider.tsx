@@ -3,9 +3,12 @@ import { useState, useEffect, ReactNode } from 'react';
 import { createEditor, Descendant } from 'slate';
 import { withHistory } from 'slate-history';
 import { Slate, withReact } from 'slate-react';
+import withNoteLayout from './withNoteLayout';
 
 export default function SlateProvider({ children }: { children: ReactNode }) {
-  const [editor] = useState(() => withHistory(withReact(createEditor())));
+  const [editor] = useState(() =>
+    withNoteLayout(withHistory(withReact(createEditor()))),
+  );
   const [initialValue, setInitialValue] = useState<Descendant[]>();
 
   useEffect(() => {
@@ -13,8 +16,8 @@ export default function SlateProvider({ children }: { children: ReactNode }) {
     // if (!db)
     setInitialValue([
       {
-        type: 'paragraph',
-        children: [{ text: 'A line of text in a paragraph.' }],
+        type: 'note-title',
+        children: [{ text: '' }],
       },
     ]);
     // else setInitialValue(JSON.parse(db));

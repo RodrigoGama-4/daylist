@@ -8,9 +8,9 @@ const LIST_TYPES = [
 ] as Element['type'][];
 
 export const EditorCmd = {
-  toggleBlock: (editor: Editor, type: Element['type']) => {
+  toggleType: (editor: Editor, type: Element['type']) => {
     const isList = LIST_TYPES.includes(type);
-    const isActive = EditorCmd.isActive(editor, type);
+    const isActive = EditorCmd.isTypeActive(editor, type);
 
     Transforms.unwrapNodes(editor, {
       match: (n) =>
@@ -45,7 +45,7 @@ export const EditorCmd = {
         format = { header: e.header, align: undefined };
       if (format.header)
         format = {
-          align: e.align,
+          ...format,
           header: (e.header
             ? e.header > 0
               ? e.header - 1
@@ -74,7 +74,7 @@ export const EditorCmd = {
     Transforms.setNodes<Element>(editor, newProps);
   },
 
-  isActive: (editor: Editor, type: Element['type']) => {
+  isTypeActive: (editor: Editor, type: Element['type']) => {
     const { selection } = editor;
     if (!selection) return false;
     const [match] = Array.from(

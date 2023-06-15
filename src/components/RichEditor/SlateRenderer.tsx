@@ -46,7 +46,7 @@ export const ElementRenderer = ({
         </ListGroup.Item>
       );
     case 'paragraph':
-      const style = { textAlign: element.align };
+      let style = { textAlign: element.align };
       if (!element.header)
         return (
           <p
@@ -80,7 +80,16 @@ export const ElementRenderer = ({
           </div>
         ),
       }[element.header];
-
+    case 'note-title':
+      return (
+        <h1
+          {...attributes}
+          style={{ textAlign: element.align }}
+          className="text-xl font-semibold p-1 px-2 border-b-2"
+        >
+          {children}
+        </h1>
+      );
     case 'image':
       return (
         <p {...attributes} className="bg-red-950 text-red-300">
