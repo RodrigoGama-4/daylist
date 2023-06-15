@@ -1,12 +1,12 @@
 'use client';
 import { useEffect, useState } from 'react';
 import RGL, { WidthProvider, Layout } from 'react-grid-layout';
-import { MuralElement } from '@/src/components/MuralElement';
-import { MdDragHandle, MdDragIndicator } from 'react-icons/md';
+import { MuralElement, ResizeHandle } from './MuralElement';
 import _ from 'lodash';
 import { Subject } from 'rxjs';
-import Point from '../Point';
+import Point from '@/src/utils/Point';
 import useWindowSize from '@/src/hooks/useWindowSize';
+import SlateProvider from '@/src/components/RichEditor/SlateProvider';
 
 // GRID
 export default function LayoutGrid({
@@ -81,8 +81,7 @@ export default function LayoutGrid({
             cols: Math.round(cellCountX),
             margin: [gridMargin, gridMargin],
             resizeHandle: ResizeHandle(),
-            // draggableHandle: '.react-draggable-handle',
-            // TODO trazer à frente quando mover ou mudar de tamanho
+            draggableHandle: '.react-draggable-handle',
             preventCollision: false,
             allowOverlap: true,
             autoSize: true,
@@ -93,7 +92,6 @@ export default function LayoutGrid({
           {layouts.map((layout, j) => (
             <div
               key={layout.i}
-              className="shadow-sm outline outline-1 outline-black bg-white"
               style={{
                 minHeight: cellSize,
                 minWidth: cellSize,
@@ -116,31 +114,6 @@ export default function LayoutGrid({
 }
 
 const ReactGridLayout = WidthProvider(RGL);
-
-export function DragHandle() {
-  return (
-    <div
-      className="react-draggable-handle absolute top-0 right-0"
-      style={{
-        cursor: 'move',
-      }}
-    >
-      <MdDragIndicator />
-    </div>
-  );
-}
-function ResizeHandle() {
-  return (
-    <div
-      className="react-resizable-handle absolute bottom-0 right-0"
-      style={{
-        cursor: 'se-resize',
-      }}
-    >
-      <MdDragHandle />
-    </div>
-  );
-}
 
 /** Observes the onDragEnd point in the _Mural_ */
 export const onAskNoteCreation$ = new Subject<Point>();

@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import Mural from '@/src/components/Mural';
+import Mural from '@/src/components/Mural/Mural';
 
 export const metadata: Metadata = {
   title: 'Mural',

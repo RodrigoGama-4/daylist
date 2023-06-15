@@ -7,7 +7,6 @@ import {
   BiAlignMiddle,
   BiAlignJustify,
 } from 'react-icons/bi';
-import { LuHeading, LuHeading2, LuHeading3 } from 'react-icons/lu';
 import {
   MdAudioFile,
   MdFormatListBulleted,
@@ -24,70 +23,124 @@ import { Paragraph } from './slate';
 import _ from 'lodash';
 import { BsCardHeading } from 'react-icons/bs';
 
+import Button from 'react-bootstrap/Button';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
+
 export default function Toolbar() {
   const editor = useSlate();
+  const variant = 'dark';
   return (
-    <div className="px-2 flex space-x-2 [&>*]:rounded text-3xl text-slate-700 [&>div>*]:cursor-pointer">
-      <div className="flex space-x-1">
-        <BsCardHeading
+    <ButtonToolbar>
+      <ButtonGroup>
+        <Button
+          variant={variant}
           onClick={() =>
             CustomEditor.toggleParagraphProp(editor, { header: 1 })
           }
-        />
-      </div>
-      <div className="flex space-x-1">
-        <MdFormatBold onClick={() => CustomEditor.toggleMark(editor, 'bold')} />
-        <MdFormatItalic
+        >
+          <BsCardHeading />
+        </Button>
+      </ButtonGroup>
+
+      <ButtonGroup>
+        <Button
+          variant={variant}
+          onClick={() => CustomEditor.toggleMark(editor, 'bold')}
+        >
+          <MdFormatBold />
+        </Button>
+        <Button
+          variant={variant}
           onClick={() => CustomEditor.toggleMark(editor, 'italic')}
-        />
-        <MdFormatStrikethrough
+        >
+          <MdFormatItalic />
+        </Button>
+        <Button
+          variant={variant}
           onClick={() => CustomEditor.toggleMark(editor, 'strike')}
-        />
-        <MdFormatUnderlined
+        >
+          <MdFormatStrikethrough />
+        </Button>
+        <Button
+          variant={variant}
           onClick={() => CustomEditor.toggleMark(editor, 'underline')}
-        />
-      </div>
-      <div className="flex space-x-1">
-        <MdFormatListBulleted
-          onClick={() => CustomEditor.toggleBlock(editor, 'bullet-list')}
-        />
-        <MdFormatListNumbered
-          onClick={() => CustomEditor.toggleBlock(editor, 'number-list')}
-        />
-        <MdChecklist
-          onClick={() => CustomEditor.toggleBlock(editor, 'check-list')}
-        />
-      </div>
-      <div className="flex space-x-1">
-        <BiAlignLeft
+        >
+          <MdFormatUnderlined />
+        </Button>
+      </ButtonGroup>
+
+      <ButtonGroup>
+        <Button
+          variant={variant}
           onClick={() =>
             CustomEditor.toggleParagraphProp(editor, { align: 'left' })
           }
-        />
-        <BiAlignMiddle
+        >
+          <BiAlignLeft />
+        </Button>
+        <Button
+          variant={variant}
           onClick={() =>
             CustomEditor.toggleParagraphProp(editor, { align: 'center' })
           }
-        />
-        <BiAlignRight
+        >
+          <BiAlignMiddle />
+        </Button>
+        <Button
+          variant={variant}
           onClick={() =>
             CustomEditor.toggleParagraphProp(editor, { align: 'right' })
           }
-        />
-        <BiAlignJustify
+        >
+          <BiAlignRight />
+        </Button>
+        <Button
+          variant={variant}
           onClick={() =>
             CustomEditor.toggleParagraphProp(editor, { align: 'justify' })
           }
-        />
-      </div>
+        >
+          <BiAlignJustify />
+        </Button>
+      </ButtonGroup>
 
-      <div className="flex space-x-1">
-        <MdImage onClick={() => CustomEditor.toggleBlock(editor, 'image')} />
-        <MdAudiotrack
+      <ButtonGroup>
+        <Button
+          variant={variant}
+          onClick={() => CustomEditor.toggleBlock(editor, 'bullet-list')}
+        >
+          <MdFormatListBulleted />
+        </Button>
+        <Button
+          variant={variant}
+          onClick={() => CustomEditor.toggleBlock(editor, 'number-list')}
+        >
+          <MdFormatListNumbered />
+        </Button>
+        <Button
+          variant={variant}
+          onClick={() => CustomEditor.toggleBlock(editor, 'check-list')}
+        >
+          <MdChecklist />
+        </Button>
+      </ButtonGroup>
+
+      <ButtonGroup>
+        <Button
+          variant={variant}
+          onClick={() => CustomEditor.toggleBlock(editor, 'image')}
+        >
+          <MdImage />
+        </Button>
+        <Button
+          variant={variant}
           onClick={() => CustomEditor.toggleBlock(editor, 'audio')}
-        />
-      </div>
-    </div>
+        >
+          <MdAudiotrack />
+        </Button>
+      </ButtonGroup>
+    </ButtonToolbar>
   );
 }
 

@@ -3,6 +3,7 @@ import { useQuery } from '@apollo/client';
 import { graphql } from '@/graphql/types';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
+import Mural from '@/src/components/Mural/Mural';
 
 const GET_DATA = graphql(`
   query Query {
@@ -22,5 +23,9 @@ export default function Home() {
     fechado: { opacity: 0, x: '-100%' },
   };
 
-  return <main></main>;
+  return (
+    <main>
+      <Mural />
+    </main>
+  );
 }

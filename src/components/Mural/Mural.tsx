@@ -1,5 +1,5 @@
 'use client';
-import LayoutGrid, { onAskNoteCreation$ } from '@/src/components/LayoutGrid';
+import LayoutGrid, { onAskNoteCreation$ } from './LayoutGrid';
 import { BiNote } from 'react-icons/bi';
 import { motion, MotionProps } from 'framer-motion';
 import { useRef, useState } from 'react';
