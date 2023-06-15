@@ -3,6 +3,7 @@ import LayoutGrid, { onAskNoteCreation$ } from './LayoutGrid';
 import { BiNote } from 'react-icons/bi';
 import { motion, MotionProps } from 'framer-motion';
 import { useRef, useState } from 'react';
+import SlateProvider from '../RichEditor/SlateProvider';
 
 export default function Mural() {
   const [isCreateMode, setIsCreatingNote] = useState(false);

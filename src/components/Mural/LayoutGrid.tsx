@@ -48,7 +48,7 @@ export default function LayoutGrid({
 
   return (
     <div className={`${className ?? ''}`}>
-      <div className="flex fixed">
+      {/* <div className="flex fixed">
         {_.range(0, cellCountX).map((i) => (
           <div
             key={i}
@@ -59,9 +59,9 @@ export default function LayoutGrid({
             }}
           />
         ))}
-      </div>
+      </div> */}
       <div className="flex">
-        <div className="flex flex-col fixed">
+        {/* <div className="flex flex-col fixed">
           {_.range(0, cellCountY).map((i) => (
             <div
               key={i}
@@ -72,11 +72,13 @@ export default function LayoutGrid({
               }}
             />
           ))}
-        </div>
+        </div> */}
         <ReactGridLayout
           {...{
             layout: layouts,
             onLayoutChange: setLayouts,
+            onDragStop: setLayouts,
+            onResizeStop: setLayouts,
             rowHeight: cellSize,
             cols: Math.round(cellCountX),
             margin: [gridMargin, gridMargin],
@@ -84,8 +86,8 @@ export default function LayoutGrid({
             draggableHandle: '.react-draggable-handle',
             preventCollision: false,
             allowOverlap: true,
-            autoSize: true,
-            useCSSTransforms: true,
+            autoSize: false,
+            useCSSTransforms: false,
             transformScale: 1,
           }}
         >
@@ -104,7 +106,7 @@ export default function LayoutGrid({
                 setLayouts(ls);
               }}
             >
-              <MuralElement id={layout.i} />
+              <MuralElement {...{ layout }} />
             </div>
           ))}
         </ReactGridLayout>
