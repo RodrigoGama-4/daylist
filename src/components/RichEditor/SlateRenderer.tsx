@@ -1,7 +1,6 @@
 import { RenderElementProps, RenderLeafProps, useSlate } from 'slate-react';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Form from 'react-bootstrap/Form';
-import { CustomEditor } from './Toolbar';
 
 export const ElementRenderer = ({
   attributes,
@@ -39,6 +38,7 @@ export const ElementRenderer = ({
         <ListGroup.Item {...attributes} as="li" className="space-x-3">
           <span
             contentEditable={false} // fixes firefox input not changing
+            suppressContentEditableWarning
           >
             <Form.Check className="inline" />
           </span>
@@ -60,21 +60,21 @@ export const ElementRenderer = ({
       return {
         1: (
           <div>
-            <h1 {...attributes} className="text-2xl">
+            <h1 {...attributes} style={style} className="text-2xl">
               {children}
             </h1>
           </div>
         ),
         2: (
           <div>
-            <h2 className="text-xl" {...attributes}>
+            <h2 {...attributes} style={style} className="text-xl">
               {children}
             </h2>
           </div>
         ),
         3: (
           <div>
-            <h3 className="text-lg" {...attributes}>
+            <h3 {...attributes} style={style} className="text-lg">
               {children}
             </h3>
           </div>
