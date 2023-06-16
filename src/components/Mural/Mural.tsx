@@ -25,6 +25,7 @@ export default function Mural() {
       }}
     >
       <LayoutGrid {...{ isCreateMode }} />
+
       {/* Botão de adicionar nota */}
       <div className="mx-10 fixed bottom-0 right-0 left-0 p-2 flex justify-end  pointer-events-none">
         <div

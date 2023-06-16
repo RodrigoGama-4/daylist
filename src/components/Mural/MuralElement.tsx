@@ -11,8 +11,12 @@ import RGL from 'react-grid-layout';
 
 /** Container para Note, Section ou Image */
 export function MuralElement({ layout }: { layout: RGL.Layout }) {
-  const [isEditMode, setEditMode] = useState(false);
-  const toggleEditMode = () => setEditMode(!isEditMode);
+  const [isEditMode, __setEditMode] = useState(false);
+  const toggleEditMode = () => {
+    const v = !isEditMode;
+    __setEditMode(v);
+    onToggleEditMode$.next(v);
+  };
 
   const [color, setColor] = useState('FFF');
   useEffect(() => {
@@ -38,27 +42,23 @@ export function MuralElement({ layout }: { layout: RGL.Layout }) {
       margin: '0',
     },
   };
-
+  const EditingOverlay = (
+    <div
+      className={`fixed bottom-0 top-0 right-0 left-0 transition-all bg-black ${
+        isEditMode
+          ? 'pointer-events-auto z-10 opacity-70'
+          : 'pointer-events-none -z-50 opacity-0'
+      }`}
+      onClick={() => isEditMode && toggleEditMode()}
+    />
+  );
   return (
     <SlateProvider>
-      <motion.div
-        className="fixed bottom-0 right-0 left-0 top-0 bg-black"
-        animate={
-          isEditMode
-            ? {
-                opacity: [0, 0.8],
-                zIndex: [-100, 0],
-              }
-            : {
-                opacity: [0.8, 0],
-                zIndex: [0, -100],
-              }
-        }
-      />
+      {EditingOverlay}
       <motion.div
         key={layout.i}
         id={`item-${layout.i}`}
-        onDoubleClick={toggleEditMode}
+        onDoubleClick={() => !isEditMode && toggleEditMode()}
         className={`drop-shadow h-full w-full overflow-y-scroll overflow-x-hidden flex flex-col ${
           !isEditMode ? 'select-none' : 'z-50'
         }`}
@@ -104,3 +104,5 @@ export function ResizeHandle() {
     </div>
   );
 }
+
+export const onToggleEditMode$ = new Subject<boolean>();
