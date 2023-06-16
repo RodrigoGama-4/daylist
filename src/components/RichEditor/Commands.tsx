@@ -66,7 +66,7 @@ export const EditorCmd = {
         match: (n) => !Editor.isEditor(n) && Element.isElement(n) && !!map(n),
       }),
     );
-    // if (!result) return null;
+    if (!result) return {};
     return map(result[0]);
   },
 

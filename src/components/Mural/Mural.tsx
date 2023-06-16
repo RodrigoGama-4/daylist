@@ -9,13 +9,13 @@ export default function Mural() {
   const [isCreateMode, setIsCreatingNote] = useState(false);
   /** Criação de notas */
   const toggleCreateMode = () => setIsCreatingNote(!isCreateMode);
-
   return (
     <div
+      id="mural"
       className={`flex flex-col min-h-full ${
         isCreateMode ? 'cursor-cell' : ''
       }`}
-      onClick={(e) => {
+      onPointerDown={(e) => {
         if (!isCreateMode) return;
         onAskNoteCreation$.next({
           x: e.clientX,

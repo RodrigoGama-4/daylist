@@ -19,15 +19,16 @@ export default function RichEditor({
   // impede que a lista faça o placeholder subir
   const renderPlaceholder = useCallback(
     ({ attributes, children }: RenderPlaceholderProps) => (
-      <span
+      <div
         {...attributes}
-        className="text-neutral-400"
+        className="text-black opacity-50 w-0 user-select-none cursor-text"
         style={{
           position: 'relative',
+          wordWrap: 'revert',
         }}
       >
-        {children}
-      </span>
+        <span className="absolute w-[100vw]">{children}</span>
+      </div>
     ),
     [],
   );

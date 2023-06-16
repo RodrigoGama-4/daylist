@@ -30,7 +30,6 @@ export function MuralElement({ layout }: { layout: RGL.Layout }) {
       width: '600px',
       height: ['82vh', '90vh'],
       margin: 'auto',
-      border: '1px solid red',
     },
     notEditing: {
       position: ['fixed', 'absolute'],
@@ -43,13 +42,25 @@ export function MuralElement({ layout }: { layout: RGL.Layout }) {
   return (
     <SlateProvider>
       <motion.div
+        className="fixed bottom-0 right-0 left-0 top-0 bg-black"
+        animate={
+          isEditMode
+            ? {
+                opacity: [0, 0.8],
+                zIndex: [-100, 0],
+              }
+            : {
+                opacity: [0.8, 0],
+                zIndex: [0, -100],
+              }
+        }
+      />
+      <motion.div
         key={layout.i}
         id={`item-${layout.i}`}
         onDoubleClick={toggleEditMode}
-        className={`shadow-sm h-full w-full overflow-y-scroll overflow-x-hidden flex flex-col ${
-          !isEditMode
-            ? 'select-none'
-            : 'outline outline-1 outline-black bg-white z-50'
+        className={`drop-shadow h-full w-full overflow-y-scroll overflow-x-hidden flex flex-col ${
+          !isEditMode ? 'select-none' : 'z-50'
         }`}
         style={{
           background: '#' + color,
@@ -60,7 +71,7 @@ export function MuralElement({ layout }: { layout: RGL.Layout }) {
         <RichEditor className="flex-1 m-0 p-1 px-2" readOnly={!isEditMode} />
         {!isEditMode && <DragHandle />}
         {isEditMode && (
-          <div className="flex justify-center fixed bottom-4 left-0 right-0">
+          <div className="fixed flex justify-center bottom-4 left-0 right-0">
             <Toolbar />
           </div>
         )}
@@ -72,7 +83,7 @@ export function MuralElement({ layout }: { layout: RGL.Layout }) {
 export function DragHandle() {
   return (
     <div
-      className="react-draggable-handle absolute top-0 right-0"
+      className="react-draggable-handle absolute top-0 right-0 opacity-30"
       style={{
         cursor: 'move',
       }}
@@ -84,7 +95,7 @@ export function DragHandle() {
 export function ResizeHandle() {
   return (
     <div
-      className={`react-resizable-handle absolute -bottom-3 -right-2`}
+      className={`react-resizable-handle w-4 h-4 opacity-0 overflow-hidden absolute -bottom-2 -right-2`}
       style={{
         cursor: 'se-resize',
       }}
