@@ -23,7 +23,11 @@ export const ElementRenderer = ({
       );
     case 'list-item':
       return (
-        <ListGroup.Item {...attributes} as="li" className="space-x-3">
+        <ListGroup.Item
+          {...attributes}
+          as="li"
+          className="space-x-3 bg-transparent"
+        >
           {children}
         </ListGroup.Item>
       );
@@ -35,7 +39,11 @@ export const ElementRenderer = ({
       );
     case 'check-item':
       return (
-        <ListGroup.Item {...attributes} as="li" className="space-x-3">
+        <ListGroup.Item
+          {...attributes}
+          as="li"
+          className="space-x-3 bg-transparent"
+        >
           <span
             contentEditable={false} // fixes firefox input not changing
             suppressContentEditableWarning
