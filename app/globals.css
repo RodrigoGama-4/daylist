@@ -8,3 +8,11 @@
     @apply m-0 h-full;
   }
 }
+
+#mural {
+  font-family: 'Pangolin';
+}
+
+:root {
+  font-family: 'Roboto';
+}

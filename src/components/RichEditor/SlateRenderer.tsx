@@ -52,7 +52,7 @@ export const ElementRenderer = ({
           <p
             {...attributes}
             style={{ ...style, lineHeight: 1.2 }}
-            className="my-1"
+            className="my-1 text-lg"
           >
             {children}
           </p>
@@ -60,21 +60,21 @@ export const ElementRenderer = ({
       return {
         1: (
           <div>
-            <h1 {...attributes} style={style} className="text-2xl">
+            <h1 {...attributes} style={style} className="text-3xl">
               {children}
             </h1>
           </div>
         ),
         2: (
           <div>
-            <h2 {...attributes} style={style} className="text-xl">
+            <h2 {...attributes} style={style} className="text-2xl">
               {children}
             </h2>
           </div>
         ),
         3: (
           <div>
-            <h3 {...attributes} style={style} className="text-lg">
+            <h3 {...attributes} style={style} className="text-xl">
               {children}
             </h3>
           </div>
@@ -85,7 +85,7 @@ export const ElementRenderer = ({
         <h1
           {...attributes}
           style={{ textAlign: element.align }}
-          className="text-xl font-semibold p-1 px-2 border-b-2 border-black border-opacity-10"
+          className="text-2xl font-semibold p-1 px-2 border-b-2 border-black border-opacity-10"
         >
           {children}
         </h1>

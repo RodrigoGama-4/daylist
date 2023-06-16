@@ -18,11 +18,6 @@ export default function Home() {
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error : {error.message}</p>;
 
-  const variants = {
-    aberto: { opacity: 1, x: 0 },
-    fechado: { opacity: 0, x: '-100%' },
-  };
-
   return (
     <main>
       <Mural />

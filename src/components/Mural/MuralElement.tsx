@@ -41,6 +41,9 @@ export function MuralElement({ layout }: { layout: RGL.Layout }) {
       height: ['fit', ''],
       margin: '0',
     },
+    hover: {
+      outline: isEditMode ? '' : `4px solid #${color}`,
+    },
   };
   const EditingOverlay = (
     <div
@@ -60,15 +63,20 @@ export function MuralElement({ layout }: { layout: RGL.Layout }) {
         id={`item-${layout.i}`}
         onDoubleClick={() => !isEditMode && toggleEditMode()}
         className={`drop-shadow h-full w-full overflow-y-scroll overflow-x-hidden flex flex-col ${
-          !isEditMode ? 'select-none' : 'z-50'
+          !isEditMode ? 'select-none react-draggable-handle' : 'z-50'
         }`}
         style={{
           background: '#' + color,
         }}
         animate={isEditMode ? 'editing' : 'notEditing'}
         variants={variants}
+        whileHover={'hover'}
+        transition={{
+          bounce: 1,
+          ease: 'easeOut',
+        }}
       >
-        <RichEditor className="flex-1 m-0 p-1 px-2" readOnly={!isEditMode} />
+        <RichEditor className="flex-1 m-0 p-1 px-4" readOnly={!isEditMode} />
         {!isEditMode && <DragHandle />}
         {isEditMode && (
           <div className="fixed flex justify-center bottom-4 left-0 right-0">
