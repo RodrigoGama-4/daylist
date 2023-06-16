@@ -8,7 +8,7 @@ export type RichText = {
   italic?: true;
   strike?: true;
   underline?: true;
-  color?: string;
+  color?: string; // TODO remover? Não faz sentido poder editar a cor de cada leaf
 };
 
 interface CommonProps<T extends string> {

@@ -134,8 +134,7 @@ export default function Toolbar() {
         </Button>
         <Button
           variant={variant}
-          // onClick={() => EditorCmd.toggleBlock(editor, 'audio')}
-          onClick={() => EditorCmd.toggleType(editor, 'note-title')}
+          onClick={() => EditorCmd.toggleType(editor, 'audio')}
         >
           <MdAudiotrack />
         </Button>
