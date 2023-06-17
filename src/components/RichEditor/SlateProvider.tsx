@@ -41,11 +41,6 @@ export default function SlateProvider({ children }: { children: ReactNode }) {
       }}
     >
       {children}
-      <style jsx>{`
-        div {
-          fontfamily: 'Roboto, sans-serif';
-        }
-      `}</style>
     </Slate>
   );
 }

@@ -11,8 +11,12 @@ import RGL from 'react-grid-layout';
 
 /** Container para Note, Section ou Image */
 export function MuralElement({ layout }: { layout: RGL.Layout }) {
-  const [isEditMode, setEditMode] = useState(false);
-  const toggleEditMode = () => setEditMode(!isEditMode);
+  const [isEditMode, __setEditMode] = useState(false);
+  const toggleEditMode = () => {
+    const v = !isEditMode;
+    __setEditMode(v);
+    onToggleEditMode$.next(v);
+  };
 
   const [color, setColor] = useState('FFF');
   useEffect(() => {
@@ -30,7 +34,6 @@ export function MuralElement({ layout }: { layout: RGL.Layout }) {
       width: '600px',
       height: ['82vh', '90vh'],
       margin: 'auto',
-      border: '1px solid red',
     },
     notEditing: {
       position: ['fixed', 'absolute'],
@@ -38,33 +41,49 @@ export function MuralElement({ layout }: { layout: RGL.Layout }) {
       height: ['fit', ''],
       margin: '0',
     },
+    hover: {
+      outline: isEditMode ? '' : `4px solid #${color}`,
+    },
   };
-
+  const EditingOverlay = (
+    <div
+      className={`fixed bottom-0 top-0 right-0 left-0 transition-all duration-500  backdrop-blur ${
+        isEditMode
+          ? 'pointer-events-auto opacity-100'
+          : 'pointer-events-none opacity-0'
+      }`}
+      onClick={() => isEditMode && toggleEditMode()}
+    />
+  );
   return (
     <SlateProvider>
+      {EditingOverlay}
       <motion.div
         key={layout.i}
         id={`item-${layout.i}`}
-        onDoubleClick={toggleEditMode}
-        className={`shadow-sm h-full w-full overflow-y-scroll overflow-x-hidden flex flex-col ${
-          !isEditMode
-            ? 'select-none'
-            : 'outline outline-1 outline-black bg-white z-50'
+        onDoubleClick={() => !isEditMode && toggleEditMode()}
+        className={`drop-shadow h-full w-full overflow-x-hidden flex flex-col ${
+          !isEditMode ? 'select-none react-draggable-handle' : 'z-50'
         }`}
         style={{
           background: '#' + color,
         }}
         animate={isEditMode ? 'editing' : 'notEditing'}
         variants={variants}
+        whileHover={'hover'}
+        transition={{
+          bounce: 1,
+          ease: 'easeOut',
+        }}
       >
-        <RichEditor className="flex-1 m-0 p-1 px-2" readOnly={!isEditMode} />
-        {!isEditMode && <DragHandle />}
-        {isEditMode && (
-          <div className="flex justify-center fixed bottom-4 left-0 right-0">
-            <Toolbar />
-          </div>
-        )}
+        <RichEditor className="flex-1 m-0 p-1 px-4" readOnly={!isEditMode} />
+        {/* {!isEditMode && <DragHandle />} */}
       </motion.div>
+      {isEditMode && (
+        <div className="fixed flex justify-center bottom-4 left-0 right-0 z-50">
+          <Toolbar />
+        </div>
+      )}
     </SlateProvider>
   );
 }
@@ -72,7 +91,7 @@ export function MuralElement({ layout }: { layout: RGL.Layout }) {
 export function DragHandle() {
   return (
     <div
-      className="react-draggable-handle absolute top-0 right-0"
+      className="react-draggable-handle absolute top-0 right-0 opacity-30"
       style={{
         cursor: 'move',
       }}
@@ -84,7 +103,7 @@ export function DragHandle() {
 export function ResizeHandle() {
   return (
     <div
-      className={`react-resizable-handle absolute -bottom-3 -right-2`}
+      className={`react-resizable-handle w-4 h-4 opacity-0 overflow-hidden absolute -bottom-2 -right-2`}
       style={{
         cursor: 'se-resize',
       }}
@@ -93,3 +112,5 @@ export function ResizeHandle() {
     </div>
   );
 }
+
+export const onToggleEditMode$ = new Subject<boolean>();

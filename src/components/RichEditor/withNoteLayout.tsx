@@ -6,22 +6,22 @@ export default function withNoteLayout(editor: Editor) {
 
   editor.normalizeNode = ([node, path]) => {
     if (path.length === 0) {
+      const title: NoteTitle = {
+        type: 'note-title',
+        children: [{ text: '' }],
+      };
+      const paragraph: Paragraph = {
+        type: 'paragraph',
+        children: [{ text: '' }],
+      };
       if (editor.children.length <= 1 && Editor.string(editor, [0, 0]) === '') {
-        const title: NoteTitle = {
-          type: 'note-title',
-          children: [{ text: '' }],
-        };
-        Transforms.insertNodes(editor, title, {
+        Transforms.insertNodes(editor, [title, paragraph], {
           at: path.concat(0),
           select: true,
         });
       }
 
       if (editor.children.length < 2) {
-        const paragraph: Paragraph = {
-          type: 'paragraph',
-          children: [{ text: '' }],
-        };
         Transforms.insertNodes(editor, paragraph, { at: path.concat(1) });
       }
 
