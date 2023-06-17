@@ -4,7 +4,7 @@ import CustomNavbar from '@/src/components/Navbar';
 export default function Template({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <div className="position-fixed">
+      <div className="position-fixed z-50">
         <CustomNavbar />
       </div>
       {children}
