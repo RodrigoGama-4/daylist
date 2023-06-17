@@ -10,7 +10,7 @@ const GET_DATA = graphql(`
   }
 `);
 
-const ADD_NOTE = graphql(`
+const CREATE_NOTE = graphql(`
   mutation Mutation($content: String!) {
     createNote(content: $content) {
       id

@@ -21,6 +21,7 @@ const typeDefs = gql`
 
   type Mutation {
     createNote(content: String!): CreateNotePayload!
+
     saveNote(note: NoteInput!): StatusOK!
     teste(content: String!): StatusOK!
   }
