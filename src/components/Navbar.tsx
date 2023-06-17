@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { Navbar, Container, Nav, Button } from 'react-bootstrap';
 import { BsFillStarFill, BsFillPersonFill, BsStack } from 'react-icons/bs';
 import { useSearchParams, useRouter } from 'next/navigation';
-import NoteTree from './NoteTree';
 import AccountInfo from './Account';
 import { motion } from 'framer-motion';
+import { CustomNoteTree } from './NoteTree';
 
 export default function CustomNavbar() {
   const router = useRouter();
@@ -65,25 +65,8 @@ export default function CustomNavbar() {
           </Nav>
         </Container>
       </Navbar>
-      {nav === 'mynotes' && <NoteTree />}
-      {nav === 'account' && (
-        <div className="overlay" onClick={() => router.back()}>
-          <AccountInfo />
-        </div>
-      )}
-      <style jsx>{`
-        .overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background-color: rgba(0, 0, 0, 0.5);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-      `}</style>
+      {nav === 'mynotes' && <CustomNoteTree />}
+      {nav === 'account' && <AccountInfo />}
     </>
   );
 }
