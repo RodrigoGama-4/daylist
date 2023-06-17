@@ -65,7 +65,7 @@ export default function CustomNavbar() {
           </Nav>
         </Container>
       </Navbar>
-      {nav === 'mynotes' && <CustomNoteTree />}
+      <CustomNoteTree isVisible={nav === 'mynotes'} />
       {nav === 'account' && <AccountInfo />}
     </>
   );
