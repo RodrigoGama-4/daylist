@@ -1,21 +1,14 @@
 'use client';
-import { useState, useCallback, useMemo, useEffect, ReactNode } from 'react';
-import { ElementRenderer, CustomLeaf } from './SlateRenderer';
-
-import { createEditor, Descendant, CustomTypes } from 'slate';
+import { useState, useEffect, ReactNode } from 'react';
+import { createEditor, Descendant } from 'slate';
 import { withHistory } from 'slate-history';
-import {
-  Slate,
-  Editable,
-  withReact,
-  useSlate,
-  RenderLeafProps,
-} from 'slate-react';
-import Toolbar from './Toolbar';
-import { Paragraph } from './slate';
+import { Slate, withReact } from 'slate-react';
+import withNoteLayout from './withNoteLayout';
 
 export default function SlateProvider({ children }: { children: ReactNode }) {
-  const [editor] = useState(() => withHistory(withReact(createEditor())));
+  const [editor] = useState(() =>
+    withNoteLayout(withHistory(withReact(createEditor()))),
+  );
   const [initialValue, setInitialValue] = useState<Descendant[]>();
 
   useEffect(() => {
@@ -23,8 +16,8 @@ export default function SlateProvider({ children }: { children: ReactNode }) {
     // if (!db)
     setInitialValue([
       {
-        type: 'paragraph',
-        children: [{ text: 'A line of text in a paragraph.' }],
+        type: 'note-title',
+        children: [{ text: '' }],
       },
     ]);
     // else setInitialValue(JSON.parse(db));
@@ -48,11 +41,6 @@ export default function SlateProvider({ children }: { children: ReactNode }) {
       }}
     >
       {children}
-      <style jsx>{`
-        div {
-          fontfamily: 'Roboto, sans-serif';
-        }
-      `}</style>
     </Slate>
   );
 }

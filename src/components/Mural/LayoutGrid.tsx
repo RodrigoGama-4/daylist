@@ -6,7 +6,9 @@ import _ from 'lodash';
 import { Subject } from 'rxjs';
 import Point from '@/src/utils/Point';
 import useWindowSize from '@/src/hooks/useWindowSize';
-import SlateProvider from '@/src/components/RichEditor/SlateProvider';
+
+import 'react-grid-layout/css/styles.css';
+import 'react-resizable/css/styles.css';
 
 // GRID
 export default function LayoutGrid({
@@ -37,8 +39,7 @@ export default function LayoutGrid({
           y,
           w: 5,
           h: 5, // iguais => quadrado
-          // TODO? adicionar uma key diferente? Depende da estrutura do que será filho do <MuralElement />, mas talvez eu deixe isso por simplicidade
-          i: Date.now().toString(),
+          i: Date.now().toString(), // key
         },
       ]);
     };
@@ -48,67 +49,43 @@ export default function LayoutGrid({
 
   return (
     <div className={`${className ?? ''}`}>
-      <div className="flex fixed">
-        {_.range(0, cellCountX).map((i) => (
+      <ReactGridLayout
+        {...{
+          layout: layouts,
+          onLayoutChange: setLayouts,
+          onDragStop: setLayouts,
+          onResizeStop: setLayouts,
+          rowHeight: cellSize,
+          cols: Math.round(cellCountX),
+          margin: [gridMargin, gridMargin],
+          resizeHandle: ResizeHandle(),
+          draggableHandle: '.react-draggable-handle',
+          preventCollision: true,
+          allowOverlap: true,
+          autoSize: false,
+          useCSSTransforms: false,
+          transformScale: 1,
+        }}
+      >
+        {layouts.map((layout, j) => (
           <div
-            key={i}
-            className={i % 2 === 0 ? 'bg-blue-500' : 'bg-black'}
+            key={layout.i}
             style={{
-              width: cellSize + gridMargin,
-              height: gridMargin,
+              minHeight: cellSize,
+              minWidth: cellSize,
             }}
-          />
+            data-grid={layout} // deixar aqui senão buga
+            onPointerDown={(e) => {
+              // trazer layout à frente, visto como acima dos outros
+              let ls = [...layouts];
+              ls = [...ls.slice(0, j), ...ls.slice(j + 1, undefined), layout];
+              setLayouts(ls);
+            }}
+          >
+            <MuralElement {...{ layout }} />
+          </div>
         ))}
-      </div>
-      <div className="flex">
-        <div className="flex flex-col fixed">
-          {_.range(0, cellCountY).map((i) => (
-            <div
-              key={i}
-              className={i % 2 === 0 ? 'bg-blue-500' : 'bg-black'}
-              style={{
-                width: gridMargin,
-                height: cellSize + gridMargin,
-              }}
-            />
-          ))}
-        </div>
-        <ReactGridLayout
-          {...{
-            layout: layouts,
-            onLayoutChange: setLayouts,
-            rowHeight: cellSize,
-            cols: Math.round(cellCountX),
-            margin: [gridMargin, gridMargin],
-            resizeHandle: ResizeHandle(),
-            draggableHandle: '.react-draggable-handle',
-            preventCollision: false,
-            allowOverlap: true,
-            autoSize: true,
-            useCSSTransforms: true,
-            transformScale: 1,
-          }}
-        >
-          {layouts.map((layout, j) => (
-            <div
-              key={layout.i}
-              style={{
-                minHeight: cellSize,
-                minWidth: cellSize,
-              }}
-              data-grid={layout} // deixar aqui senão buga
-              onPointerDown={(e) => {
-                // trazer layout à frente, visto como acima dos outros
-                let ls = [...layouts];
-                ls = [...ls.slice(0, j), ...ls.slice(j + 1, undefined), layout];
-                setLayouts(ls);
-              }}
-            >
-              <MuralElement id={layout.i} />
-            </div>
-          ))}
-        </ReactGridLayout>
-      </div>
+      </ReactGridLayout>
     </div>
   );
 }

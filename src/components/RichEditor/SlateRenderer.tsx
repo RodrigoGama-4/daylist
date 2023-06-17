@@ -1,7 +1,6 @@
 import { RenderElementProps, RenderLeafProps, useSlate } from 'slate-react';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Form from 'react-bootstrap/Form';
-import { CustomEditor } from './Toolbar';
 
 export const ElementRenderer = ({
   attributes,
@@ -24,7 +23,11 @@ export const ElementRenderer = ({
       );
     case 'list-item':
       return (
-        <ListGroup.Item {...attributes} as="li" className="space-x-3">
+        <ListGroup.Item
+          {...attributes}
+          as="li"
+          className="space-x-3 bg-transparent"
+        >
           {children}
         </ListGroup.Item>
       );
@@ -36,9 +39,14 @@ export const ElementRenderer = ({
       );
     case 'check-item':
       return (
-        <ListGroup.Item {...attributes} as="li" className="space-x-3">
+        <ListGroup.Item
+          {...attributes}
+          as="li"
+          className="space-x-3 bg-transparent"
+        >
           <span
             contentEditable={false} // fixes firefox input not changing
+            suppressContentEditableWarning
           >
             <Form.Check className="inline" />
           </span>
@@ -46,13 +54,13 @@ export const ElementRenderer = ({
         </ListGroup.Item>
       );
     case 'paragraph':
-      const style = { textAlign: element.align };
+      let style = { textAlign: element.align };
       if (!element.header)
         return (
           <p
             {...attributes}
             style={{ ...style, lineHeight: 1.2 }}
-            className="my-1"
+            className="my-1 text-lg"
           >
             {children}
           </p>
@@ -60,27 +68,36 @@ export const ElementRenderer = ({
       return {
         1: (
           <div>
-            <h1 {...attributes} className="text-2xl">
+            <h1 {...attributes} style={style} className="text-3xl">
               {children}
             </h1>
           </div>
         ),
         2: (
           <div>
-            <h2 className="text-xl" {...attributes}>
+            <h2 {...attributes} style={style} className="text-2xl">
               {children}
             </h2>
           </div>
         ),
         3: (
           <div>
-            <h3 className="text-lg" {...attributes}>
+            <h3 {...attributes} style={style} className="text-xl">
               {children}
             </h3>
           </div>
         ),
       }[element.header];
-
+    case 'note-title':
+      return (
+        <h1
+          {...attributes}
+          style={{ textAlign: element.align }}
+          className="text-2xl font-semibold p-1 px-2 border-b-2 border-black border-opacity-10"
+        >
+          {children}
+        </h1>
+      );
     case 'image':
       return (
         <p {...attributes} className="bg-red-950 text-red-300">
