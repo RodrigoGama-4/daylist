@@ -1,19 +1,10 @@
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { BsPencilSquare } from 'react-icons/bs';
-import { motion } from 'framer-motion';
+import { motion, Variants, AnimatePresence } from 'framer-motion';
 
-function AccountInfo() {
+function AccountInfo({ isVisible }: { isVisible: boolean }) {
   const router = useRouter();
-  const [isExiting, setIsExiting] = useState(false);
-
-  const handleExit = () => {
-    setIsExiting(true);
-    setTimeout(() => {
-      router.back();
-    }, 200);
-  };
-
   const popover = (
     <div
       style={{
@@ -36,49 +27,47 @@ function AccountInfo() {
       </motion.button>
     </div>
   );
+  const variants: Variants = {
+    fechado: {
+      opacity: 0,
+      scale: 1,
+      transition: { duration: 0.1 },
+    },
+    aberto: {
+      transition: { duration: 0.2, ease: [0, 0.71, 0.2, 1] },
+      opacity: 1,
+      scale: 1.2,
+    },
+  };
 
   return (
     <>
-      <div className="overlay" onClick={handleExit}>
-        <motion.div
-          className="position-absolute "
-          style={{
-            width: '50vw',
-            height: '50vh',
-            backgroundColor: '#fff',
-            padding: '20px',
-            borderRadius: '10px',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-          initial={{ opacity: 0, scale: 1.2 }}
-          animate={{
-            opacity: isExiting ? 0 : 1,
-            scale: isExiting ? 0.8 : 1,
-          }}
-          transition={{
-            ease: [0, 0.71, 0.2, 1.01],
-          }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          {popover}
-        </motion.div>
-      </div>
-      <style jsx>{`
-        .overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background-color: rgba(0, 0, 0, 0.5);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-      `}</style>
+      <AnimatePresence>
+        {isVisible && (
+          <motion.div
+            className="position-fixed w-100 h-100 d-flex align-items-center justify-content-center"
+            style={{
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            }}
+            onClick={() => router.back()}
+          >
+            <motion.div
+              className="position-absolute bg-white p-4 rounded d-flex flex-column align-items-center justify-content-center"
+              style={{
+                height: '35rem',
+                width: '60rem',
+              }}
+              variants={variants}
+              initial={'fechado'}
+              animate={'aberto'}
+              exit={'fechado'}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {popover}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
