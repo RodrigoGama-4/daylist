@@ -31,11 +31,11 @@ export default function CustomNavbar() {
       <Navbar
         bg="dark"
         variant="dark"
-        className="position-relative"
-        style={{ width: '4rem', height: '100%' }}
+        className="position-absolute vh-100"
+        style={{ width: '4rem' }}
       >
         <Container>
-          <Nav className="flex-column">
+          <Nav className="flex-column" style={{ position: 'absolute', top: 0 }}>
             <motion.button
               whileHover={{
                 scale: buttonScale,
