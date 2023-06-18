@@ -1,16 +1,30 @@
-import React, { useState } from 'react';
-import { Navbar, Container, Nav, Button } from 'react-bootstrap';
+import React from 'react';
+import { Navbar, Container, Nav } from 'react-bootstrap';
 import { BsFillStarFill, BsFillPersonFill, BsStack } from 'react-icons/bs';
 import { useSearchParams, useRouter } from 'next/navigation';
 import AccountInfo from './Account';
 import { motion } from 'framer-motion';
 import { CustomNoteTree } from './NoteTree';
 
+enum NavOption {
+  MYNOTES = 'mynotes',
+  ACCOUNT = 'account',
+}
+
 export default function CustomNavbar() {
   const router = useRouter();
   const query = useSearchParams();
   const nav = query.get('nav');
   const buttonScale = 1.1;
+
+  const handleNavButtonClick = (option: NavOption) => {
+    if (nav !== option) {
+      const queryParam = option === NavOption.MYNOTES ? 'mynotes' : 'account';
+      router.push(`/?nav=${queryParam}`);
+    } else {
+      router.back();
+    }
+  };
 
   return (
     <>
@@ -31,17 +45,12 @@ export default function CustomNavbar() {
             >
               <BsFillStarFill />
             </motion.button>
+
             <motion.button
               whileHover={{
                 scale: buttonScale,
               }}
-              onClick={() => {
-                if (nav !== 'account') {
-                  router.push('/?nav=account');
-                } else {
-                  router.back();
-                }
-              }}
+              onClick={() => handleNavButtonClick(NavOption.ACCOUNT)}
               className="mb-3 btn btn-primary"
             >
               <BsFillPersonFill />
@@ -51,13 +60,7 @@ export default function CustomNavbar() {
               whileHover={{
                 scale: buttonScale,
               }}
-              onClick={() => {
-                if (nav !== 'mynotes') {
-                  router.push('/?nav=mynotes');
-                } else {
-                  router.back();
-                }
-              }}
+              onClick={() => handleNavButtonClick(NavOption.MYNOTES)}
               className="mb-3 btn btn-primary"
             >
               <BsStack />
@@ -65,8 +68,11 @@ export default function CustomNavbar() {
           </Nav>
         </Container>
       </Navbar>
-      <CustomNoteTree isVisible={nav === 'mynotes'} />
-      {nav === 'account' && <AccountInfo />}
+
+      <CustomNoteTree
+        isVisible={nav === NavOption.MYNOTES || nav === NavOption.ACCOUNT}
+      />
+      <AccountInfo isVisible={nav === NavOption.ACCOUNT} />
     </>
   );
 }
