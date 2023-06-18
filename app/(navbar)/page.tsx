@@ -11,18 +11,16 @@ const GET_DATA = graphql(`
 `);
 
 const CREATE_NOTE = graphql(`
-  mutation Mutation($content: String!) {
-    createNote(content: $content) {
+  mutation Mutation($note: CreateNoteInput!) {
+    createNote(note: $note) {
       id
     }
   }
 `);
 
 export default function Home() {
-  const { loading, error, data } = useQuery(GET_DATA);
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error : {error.message}</p>;
+  // const { loading, error, data } = useQuery(GET_DATA);
+  // const { loading, error, data } = useQuery(CREATE_NOTE);
 
   return (
     <main>

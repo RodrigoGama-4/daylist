@@ -2,3 +2,4 @@ schema: 'graphql/schemas/hello.ts'
 documents:
   - 'app/**/*.{graphql,js,ts,jsx,tsx}'
   - 'src/**/*.{graphql,js,ts,jsx,tsx}'
+  - 'graphql/**/*.{graphql,js,ts,jsx,tsx}'
