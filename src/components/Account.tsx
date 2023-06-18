@@ -24,6 +24,7 @@ function AccountInfo() {
         width: '100%',
       }}
     >
+      <div className="bg-black"></div>
       <motion.button
         className="btn btn-primary"
         style={{ position: 'absolute', top: 5, right: 5 }}

@@ -1,36 +1,46 @@
-import React from 'react';
-import Image from 'next/image';
-import 'bootstrap/dist/css/bootstrap.min.css';
+'use client';
 import { BsFillPersonFill } from 'react-icons/bs';
+import { auth } from '../firebase';
+import {
+  GoogleAuthProvider,
+  signInWithRedirect,
+  getRedirectResult,
+} from 'firebase/auth';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
-const Login = () => {
+export default function Login() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const sub = auth.onAuthStateChanged((user) => {
+      if (!user) return;
+      alert(`
+        ${user.displayName}
+        ${user.email}
+        ${user.photoURL}
+      `);
+      router.push('/');
+    });
+    return () => sub();
+  }, []);
+
+  if (auth.currentUser) router.push('/');
   return (
-    <div className="login-wrapper">
-      <div className="login-container d-flex flex-column align-items-center justify-content-center">
+    <div className="flex justify-center items-center h-screen">
+      <div className="border-2 border-neutral-800 rounded-lg p-5 h-[60vh] w-[40vw] flex flex-col items-center justify-center">
         <div className="mb-5">
           <BsFillPersonFill size={120} />
         </div>
-        <button className="btn btn-primary">entrar com google</button>
+        <button className="btn btn-primary" onClick={signIn}>
+          Entrar com o Google
+        </button>
       </div>
-
-      <style jsx>{`
-        .login-wrapper {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          height: 100vh;
-        }
-
-        .login-container {
-          border: 1px solid black;
-          border-radius: 10px;
-          padding: 20px;
-          height: 60vh;
-          width: 40vw;
-        }
-      `}</style>
     </div>
   );
-};
+}
 
-export default Login;
+const signIn = async () => {
+  const provider = new GoogleAuthProvider();
+  await signInWithRedirect(auth, provider);
+};

@@ -63,11 +63,12 @@ export function MuralElement({ layout }: { layout: RGL.Layout }) {
         id={`item-${layout.i}`}
         onDoubleClick={() => !isEditMode && toggleEditMode()}
         className={`drop-shadow h-full w-full overflow-x-hidden flex flex-col ${
-          !isEditMode ? 'select-none react-draggable-handle' : 'z-50'
+          !isEditMode ? 'select-none react-draggable-handle' : 'z-50 shadow-lg'
         }`}
         style={{
           background: '#' + color,
         }}
+        layout
         animate={isEditMode ? 'editing' : 'notEditing'}
         variants={variants}
         whileHover={'hover'}

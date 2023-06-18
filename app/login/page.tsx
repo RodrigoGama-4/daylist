@@ -1,7 +1,14 @@
-'use client';
-
 import Login from '@/src/components/Login';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Sign In - Daylist',
+};
 
 export default function Page() {
-  return <Login />;
+  return (
+    <main>
+      <Login />
+    </main>
+  );
 }
