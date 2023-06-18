@@ -6,9 +6,11 @@ const config: CodegenConfig = {
   // usar arquivo e não localhost evita enlouquecer quando exclui graphql/types
   schema: 'graphql/schemas/**/*.{ts,tsx,gql,graphql}',
   documents: [
+    // TODO uncomment to use types
     'app/**/*.{ts,tsx,gql,graphql,}',
+
     // deixar aqui, senão o watcher não atualiza ao salvar
-    'graphql/{schemas,resolvers}/**/*.{ts,tsx,gql,graphql}',
+    'graphql/**/*.{ts,tsx,gql,graphql}',
   ],
   generates: {
     'graphql/types/': {

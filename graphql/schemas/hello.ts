@@ -12,23 +12,91 @@ import { gql } from '@apollo/client';
  */
 
 const typeDefs = gql`
+  type Mutation {
+    # Notes
+    createNote(note: CreateNoteInput!): CreateNotePayload!
+    saveNote(note: SaveNoteInput!): StatusOk!
+    # Layouts
+    saveLayout(layout: MuralLayoutInput!): StatusOk!
+    # Tests
+    teste(content: String!): StatusOk!
+  }
+  input MuralLayoutInput {
+    uid: ID!
+    layouts: [LayoutInput!]!
+  }
+  input LayoutInput {
+    i: ID!
+    h: Int!
+    w: Int!
+    x: Int!
+    y: Int!
+  }
+  input CreateNoteInput {
+    content: String!
+    priority: Priority
+    weekDays: [WeekDays!]
+  }
+  type CreateNotePayload {
+    id: ID!
+    content: String!
+  }
+  input SaveNoteInput {
+    id: ID!
+    content: String!
+    priority: Priority
+    weekDays: [WeekDays!]
+    # TODO inputs
+    group: SharingGroupInput
+    stats: [DateRecordInput!]
+    tags: [TagInput!]
+  }
+  input TagInput {
+    id: ID!
+    name: String!
+    notes: [ID!]!
+  }
+  input DateRecordInput {
+    date: ID!
+    record: [NoteRecordInput!]!
+  }
+  input NoteRecordInput {
+    note: ID!
+    count: Int
+    isComplete: Boolean
+  }
+  input SharingGroupInput {
+    id: ID!
+    name: String!
+    users: [ID!]!
+    notes: [ID!]
+  }
+  type StatusOk {
+    success: Boolean!
+    teste: String
+  }
+
+  # QUERY
+
   type Query {
     hello: String!
     world: String!
     note(id: ID!): Note
-    notes(user: ID!): [Note!]!
+    notes(uid: ID!): [Note!]!
+    layout(uid: ID!): MuralLayout
+    tags(uid: ID!): [Tag!]
   }
-
-  type Mutation {
-    createNote(content: String!): CreateNotePayload!
-
-    saveNote(note: NoteInput!): StatusOK!
-    teste(content: String!): StatusOK!
+  type MuralLayout {
+    uid: ID!
+    layouts: [Layout!]!
   }
-
-  type CreateNotePayload {
-    id: ID!
-    content: String!
+  type Layout {
+    note: ID!
+    i: ID!
+    h: Int!
+    w: Int!
+    x: Int!
+    y: Int!
   }
 
   type Note {
@@ -41,17 +109,6 @@ const typeDefs = gql`
     group: SharingGroup
     stats: [DateRecord!]
     tags: [Tag!]
-  }
-
-  input NoteInput {
-    id: ID!
-    content: String!
-    priority: Priority
-    weekDays: [WeekDays!]
-    # TODO inputs
-    # group: SharingGroup
-    # stats: [DateRecord!]
-    # tags: [Tag!]
   }
 
   type User {
@@ -70,7 +127,7 @@ const typeDefs = gql`
     notes: [Note!]
   }
 
-  # Notes completion status of a given date
+  # Notes completion statuses of a given date
   type DateRecord {
     date: ID!
     record: [NoteRecord!]!
@@ -103,11 +160,6 @@ const typeDefs = gql`
     LOW
     MEDIUM
     HIGH
-  }
-
-  type StatusOK {
-    success: Boolean!
-    teste: String!
   }
 `;
 
