@@ -76,7 +76,7 @@ const typeDefs = gql`
     teste: String
   }
 
-  # QUERY
+  ############# QUERY
 
   type Query {
     hello: String!

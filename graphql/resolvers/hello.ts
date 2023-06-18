@@ -1,6 +1,15 @@
 /** Typed resolvers */
 import { auth, db } from '@/src/firebase';
-import { addDoc, collection, doc, getDoc } from 'firebase/firestore';
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  where,
+  query,
+  documentId,
+} from 'firebase/firestore';
 import { Resolvers, Note, Layout, SaveNoteInput, Tag } from '../types/graphql';
 
 const resolvers: Resolvers = {
@@ -9,12 +18,19 @@ const resolvers: Resolvers = {
     world: () => 'World!',
 
     note: async (_, args) => {
-      const nota = await getDocument('notes', args.id);
-      return nota as Note | null;
+      return await getDocument<FstoreNote>(Fstore.NOTES, args.id);
     },
-    notes: () => [], // TODO using where note.uid === user.id
+    notes: async (_, { uid }) => {
+      const q = query(
+        collection(db, Fstore.NOTES),
+        where('uid', '==', `${uid}`),
+      );
+      const docs = (await getDocs(q)).docs;
+      const notes = docs.map((d) => d.data() as FstoreNote);
+      return notes;
+    },
     layout: async (_, args) => {
-      const doc = await getDocument<{ layouts: Layout[] }>('layouts', args.uid);
+      const doc = await getDocument<FstoreLayouts>(Fstore.LAYOUTS, args.uid);
       return doc
         ? {
             uid: `${args.uid}`,
@@ -24,13 +40,13 @@ const resolvers: Resolvers = {
     },
     tags: async (_, args) => {
       return (
-        (await getDocument<{ tags: Tag[] }>('tags', args.uid))?.tags ?? null
+        (await getDocument<FstoreTags>(Fstore.TAGS, args.uid))?.tags ?? null
       );
     },
   },
   Mutation: {
     createNote: async (_, args) => {
-      const _doc = await addDoc(collection(db, 'notes'), args.note);
+      const _doc = await addDoc(collection(db, Fstore.NOTES), args.note);
       return {
         id: _doc.id,
         ...args.note,
@@ -50,17 +66,34 @@ const resolvers: Resolvers = {
   StatusOk: {
     teste: (parent) =>
       parent.teste === 'caso geral'
-        ? 'Executou caso geral, e sobreescreveu com o resolver específico'
-        : 'Não ocorre',
+        ? 'Executou caso geral e SOBREESCREVEU com o resolver específico'
+        : 'Não deve ocorrer',
   },
 };
 export default resolvers;
 
-async function getDocument<T>(
-  at: 'notes' | 'tags' | 'layouts',
+async function getDocument<T extends FstoreData>(
+  collection: Fstore,
   id: string | number,
 ) {
-  const r = await getDoc(doc(db, at, `${id}`));
+  const r = await getDoc(doc(db, collection, `${id}`));
   if (!r.exists()) return null;
-  else return r.data() as T;
+  return r.data() as T;
 }
+
+//
+
+enum Fstore {
+  NOTES = 'notes',
+  TAGS = 'tags',
+  LAYOUTS = 'layouts',
+}
+type FstoreData = FstoreNote | FstoreLayouts | FstoreTags;
+// interface FstoreNote {}
+type FstoreNote = Note;
+type FstoreLayouts = {
+  layouts: Layout[];
+};
+type FstoreTags = {
+  tags: Tag[];
+};
