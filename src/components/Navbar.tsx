@@ -5,25 +5,23 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import AccountInfo from './Account';
 import { motion } from 'framer-motion';
 import { CustomNoteTree } from './NoteTree';
+import usePushQuery from '../hooks/usePushQuery';
 
 enum NavOption {
-  MYNOTES = 'mynotes',
+  MY_NOTES = 'my_notes',
   ACCOUNT = 'account',
 }
 
 export default function CustomNavbar() {
-  const router = useRouter();
-  const query = useSearchParams();
-  const nav = query.get('nav');
   const buttonScale = 1.1;
-
-  const handleNavButtonClick = (option: NavOption) => {
-    if (nav !== option) {
-      const queryParam = option === NavOption.MYNOTES ? 'mynotes' : 'account';
-      router.push(`/?nav=${queryParam}`);
-    } else {
-      router.back();
-    }
+  const query = useSearchParams();
+  const navQuery = query.getAll('nav');
+  const { pushQuery } = usePushQuery();
+  const toggleNav = (opt: NavOption) => {
+    const q = navQuery.includes(opt)
+      ? { rem: { nav: opt } }
+      : { add: { nav: opt } };
+    pushQuery(q);
   };
 
   return (
@@ -35,13 +33,16 @@ export default function CustomNavbar() {
         style={{ width: '4rem' }}
       >
         <Container>
-          <Nav className="flex-column" style={{ position: 'absolute', top: 0 }}>
+          <Nav
+            className="flex-column align-items-center"
+            style={{ position: 'absolute', top: 0 }}
+          >
             <motion.button
               whileHover={{
                 scale: buttonScale,
               }}
               onClick={() => console.log('futura logo')}
-              className="mb-3 btn btn-primary"
+              className="mb-3 btn bg-dark-subtle"
             >
               <BsFillStarFill />
             </motion.button>
@@ -50,8 +51,8 @@ export default function CustomNavbar() {
               whileHover={{
                 scale: buttonScale,
               }}
-              onClick={() => handleNavButtonClick(NavOption.ACCOUNT)}
-              className="mb-3 btn btn-primary"
+              onClick={() => toggleNav(NavOption.ACCOUNT)}
+              className="mb-3 btn btn-outline-primary"
             >
               <BsFillPersonFill />
             </motion.button>
@@ -60,8 +61,8 @@ export default function CustomNavbar() {
               whileHover={{
                 scale: buttonScale,
               }}
-              onClick={() => handleNavButtonClick(NavOption.MYNOTES)}
-              className="mb-3 btn btn-primary"
+              onClick={() => toggleNav(NavOption.MY_NOTES)}
+              className="mb-3 btn btn-outline-primary"
             >
               <BsStack />
             </motion.button>
@@ -69,10 +70,8 @@ export default function CustomNavbar() {
         </Container>
       </Navbar>
 
-      <CustomNoteTree
-        isVisible={nav === NavOption.MYNOTES || nav === NavOption.ACCOUNT}
-      />
-      <AccountInfo isVisible={nav === NavOption.ACCOUNT} />
+      <CustomNoteTree isVisible={navQuery.includes(NavOption.MY_NOTES)} />
+      <AccountInfo isVisible={navQuery.includes(NavOption.ACCOUNT)} />
     </>
   );
 }

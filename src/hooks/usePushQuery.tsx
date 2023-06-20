@@ -9,12 +9,14 @@ export default function usePushQuery() {
   const router = useRouter();
   const query = useSearchParams();
   function pushQuery({
-    toAdd,
-    toRemove,
+    add: toAdd = {},
+    rem: toRem = {},
   }: {
-    toAdd: Record<string, string[] | string>;
-    toRemove: Record<string, string[] | string | '*'>;
+    add?: Record<string, string[] | string>;
+    rem?: Record<string, string[] | string | '*'>;
   }) {
+    toAdd ??= {};
+    toRem ??= {};
     const newQuery = new URLSearchParams(query.toString());
     const keySet = new Set([
       ...Array.from(new Set(query.keys())),
@@ -28,18 +30,20 @@ export default function usePushQuery() {
           typeof toAdd[key] === 'object'
             ? (toAdd[key] as string[])
             : [toAdd[key] as string];
-      const addSet = new Set(addValues);
       let valueSet = new Set(values);
 
-      if (_.has(toRemove, key)) {
-        let rm = toRemove[key];
+      if (_.has(toRem, key)) {
+        let rm = toRem[key];
         if (rm === '*') valueSet.clear();
         else {
           if (typeof rm === 'string') rm = [rm];
           rm.forEach((v) => valueSet.delete(v));
         }
       }
-      valueSet = new Set([...Array.from(valueSet), ...Array.from(addSet)]);
+      valueSet = new Set([
+        ...Array.from(valueSet),
+        ...Array.from(new Set(addValues)),
+      ]);
 
       newQuery.delete(key);
       valueSet.forEach((q) => {
