@@ -6,10 +6,11 @@ export const CustomNoteTree = ({ isVisible }: { isVisible: boolean }) => {
     fechado: {
       scale: 0,
       x: '-10vw',
-      originX: 0.8,
-      originY: 0.09,
+      originX: 0,
+      originY: 0,
       borderRadius: '10%',
       transition: { duration: 0.12 },
+      zIndex: '-10',
     },
     aberto: {
       scale: 1,

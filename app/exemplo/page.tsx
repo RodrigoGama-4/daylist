@@ -10,8 +10,8 @@ export default function Page() {
         className="btn btn-primary"
         onClick={() => {
           const route = pushQuery({
-            toAdd: { nav: '2', muitos: ['32', '33', '42'] },
-            toRemove: {
+            add: { nav: '2', muitos: ['32', '33', '42'] },
+            rem: {
               nav: '5', // pode usar string ou string[]
               muitos: '*', // isso aqui deleta tudo o que não tiver em toAdd
             },
