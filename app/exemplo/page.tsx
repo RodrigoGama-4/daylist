@@ -11,7 +11,7 @@ export default function Page() {
         onClick={() => {
           const route = pushQuery({
             add: { nav: '2', muitos: ['32', '33', '42'] },
-            toRemove: {
+            rem: {
               nav: '5', // pode usar string ou string[]
               muitos: '*', // isso aqui deleta tudo o que não tiver em toAdd
             },
