@@ -1,4 +1,4 @@
-import React from 'react';
+'use client';
 import { Navbar, Container, Nav } from 'react-bootstrap';
 import { BsFillStarFill, BsFillPersonFill, BsStack } from 'react-icons/bs';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -26,17 +26,9 @@ export default function CustomNavbar() {
 
   return (
     <>
-      <Navbar
-        bg="dark"
-        variant="dark"
-        className="position-absolute vh-100"
-        style={{ width: '4rem' }}
-      >
+      <Navbar bg="dark" variant="dark" className=" align-items-baseline flex-1">
         <Container>
-          <Nav
-            className="flex-column align-items-center"
-            style={{ position: 'absolute', top: 0 }}
-          >
+          <Nav className="flex-column">
             <motion.button
               whileHover={{
                 scale: buttonScale,
