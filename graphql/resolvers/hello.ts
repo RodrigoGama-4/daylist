@@ -57,7 +57,6 @@ const resolvers: Resolvers = {
       const note: SaveNoteInput = {
         ...args.note,
       };
-      note.
       return {
         success: true,
       };
