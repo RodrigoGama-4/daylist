@@ -24,22 +24,27 @@ export default function LayoutGrid({
 
   const cellSize = 32; // pixels, X & Y
   const gridMargin = 4;
-  const cellCountX = windowX / (cellSize + gridMargin); // grid units
-  const cellCountY = windowY / (cellSize + gridMargin);
+  const cellCountX = windowX / (cellSize + gridMargin), // grid units
+    cellCountY = windowY / (cellSize + gridMargin);
+  const cellWidth = 6,
+    cellHeight = 5;
 
   useEffect(() => {
     const handleNoteCreation = (point: Point) => {
       if (!windowX || !windowY) return;
-      console.log(point.x, point.y);
-      const x = Math.round(point.x / cellSize);
-      const y = Math.round(point.y / cellSize);
+      const main = document.querySelector('main');
+      console.log(main?.scrollTop, window.screen.height);
+      const pointX = point.x,
+        pointY = point.y + Math.max(main!.scrollTop - window.screen.height, 0);
+      const x = Math.floor(pointX / cellSize) - Math.floor(cellWidth / 2);
+      const y = Math.round(pointY / cellSize) - Math.floor(cellHeight / 2);
       setLayouts((L) => [
         ...L,
         {
           x,
           y,
-          w: 6,
-          h: 5, // iguais => quadrado
+          w: cellWidth,
+          h: cellHeight,
           i: Date.now().toString(), // key
         },
       ]);
@@ -67,7 +72,6 @@ export default function LayoutGrid({
           useCSSTransforms: false,
           transformScale: 1,
         }}
-        className="container"
       >
         {layouts.map((layout, j) => (
           <div

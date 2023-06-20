@@ -6,7 +6,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
       <div className="flex relative z-50">
         <CustomNavbar />
       </div>
-      <main className="m-2 h-full flex-1 overflow-y-scroll">{children}</main>
+      <main className="p-2 h-full flex-1 overflow-y-scroll">{children}</main>
     </div>
   );
 }
