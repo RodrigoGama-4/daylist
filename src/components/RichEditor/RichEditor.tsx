@@ -21,7 +21,7 @@ export default function RichEditor({
     ({ attributes, children }: RenderPlaceholderProps) => (
       <div
         {...attributes}
-        className="text-black opacity-50 w-0 user-select-none cursor-text"
+        className="text-black opacity-30 w-0 user-select-none cursor-text"
         style={{
           position: 'relative',
           wordWrap: 'revert',
