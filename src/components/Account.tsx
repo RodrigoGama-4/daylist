@@ -3,19 +3,10 @@ import React, { useState } from 'react';
 import { BsPencilSquare } from 'react-icons/bs';
 import { motion, Variants, AnimatePresence } from 'framer-motion';
 
-function AccountInfo({ isVisible }: { isVisible: boolean }) {
+export default function AccountInfo({ isVisible }: { isVisible: boolean }) {
   const router = useRouter();
-  const popover = (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        height: '100%',
-        width: '100%',
-      }}
-    >
-      <div className="bg-black"></div>
+  const buttonEdit = (
+    <div>
       <motion.button
         className="btn btn-primary"
         style={{ position: 'absolute', top: 5, right: 5 }}
@@ -30,13 +21,21 @@ function AccountInfo({ isVisible }: { isVisible: boolean }) {
   const variants: Variants = {
     fechado: {
       opacity: 0,
-      scale: 1,
+      scale: 0.95,
       transition: { duration: 0.1 },
     },
     aberto: {
       transition: { duration: 0.2, ease: [0, 0.71, 0.2, 1] },
       opacity: 1,
-      scale: 1.2,
+      scale: 1,
+    },
+    aniOverlay: {
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      transition: { duration: 0.3 },
+    },
+    fimOverlay: {
+      backgroundColor: 'rgba(0, 0, 0, 0)',
+      transition: { duration: 0.3 },
     },
   };
 
@@ -46,10 +45,11 @@ function AccountInfo({ isVisible }: { isVisible: boolean }) {
         {isVisible && (
           <motion.div
             className="position-fixed w-100 h-100 d-flex align-items-center justify-content-center"
-            style={{
-              backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            }}
             onClick={() => router.back()}
+            variants={variants}
+            initial={'fimOverlay'}
+            animate={'aniOverlay'}
+            exit={'fimOverlay'}
           >
             <motion.div
               className="position-absolute bg-white p-4 rounded d-flex flex-column align-items-center justify-content-center"
@@ -63,7 +63,7 @@ function AccountInfo({ isVisible }: { isVisible: boolean }) {
               exit={'fechado'}
               onClick={(e) => e.stopPropagation()}
             >
-              {popover}
+              {buttonEdit}
             </motion.div>
           </motion.div>
         )}
@@ -71,5 +71,3 @@ function AccountInfo({ isVisible }: { isVisible: boolean }) {
     </>
   );
 }
-
-export default AccountInfo;
