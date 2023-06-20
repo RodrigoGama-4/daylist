@@ -30,6 +30,7 @@ export default function LayoutGrid({
   useEffect(() => {
     const handleNoteCreation = (point: Point) => {
       if (!windowX || !windowY) return;
+      console.log(point.x, point.y);
       const x = Math.round(point.x / cellSize);
       const y = Math.round(point.y / cellSize);
       setLayouts((L) => [
@@ -37,7 +38,7 @@ export default function LayoutGrid({
         {
           x,
           y,
-          w: 5,
+          w: 6,
           h: 5, // iguais => quadrado
           i: Date.now().toString(), // key
         },
@@ -62,10 +63,11 @@ export default function LayoutGrid({
           draggableHandle: '.react-draggable-handle',
           preventCollision: true,
           allowOverlap: true,
-          autoSize: false,
+          autoSize: true,
           useCSSTransforms: false,
           transformScale: 1,
         }}
+        className="container"
       >
         {layouts.map((layout, j) => (
           <div
