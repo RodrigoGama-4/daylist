@@ -1,22 +1,12 @@
-'use client';
 import CustomNavbar from '@/src/components/Navbar';
 
 export default function Template({ children }: { children: React.ReactNode }) {
   return (
-    <>
-      <div className="z-50 fixed">
+    <div className="flex h-full">
+      <div className="flex relative z-50 mr-1">
         <CustomNavbar />
       </div>
-      {children}
-    </>
+      <main className="h-full flex-1 overflow-y-scroll">{children}</main>
+    </div>
   );
 }
-
-/** Todas as sub-rotas compartilham deste template
- *
- * Os parênteses significam que o router vai ignorar essa pasta
- * e não tratá-la como uma nova rota, apenas como grupo
- *
- * A intenção é impedir que a navbar apareça em outras rotas,
- * e apareça apenas nas subpastas (rotas) desta
- */
