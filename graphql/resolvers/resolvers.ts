@@ -82,7 +82,7 @@ const resolvers: Resolvers = {
       // const obj = await addDoc(collection(db, Fstore.NOTES), args.note);
       const ok = await setDocument(Fstore.NOTES, note.id, note);
       return {
-        success: true, // TODO err handling
+        success: ok,
       };
     },
 

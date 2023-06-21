@@ -5,6 +5,7 @@ import {
   GoogleAuthProvider,
   signInWithRedirect,
   getRedirectResult,
+  signInWithPopup,
 } from 'firebase/auth';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -13,7 +14,7 @@ export default function Login() {
   const router = useRouter();
 
   useEffect(() => {
-    const sub = auth.onAuthStateChanged((user) => {
+    const unsub = auth.onAuthStateChanged((user) => {
       if (!user) return;
       alert(`
         ${user.displayName}
@@ -22,16 +23,16 @@ export default function Login() {
       `);
       router.push('/');
     });
-    return () => sub();
-  }, []);
+    return () => unsub();
+  }, [router]);
 
-  if (auth.currentUser) router.push('/');
   return (
     <div className="flex justify-center items-center h-screen">
       <div className="border-2 border-neutral-800 rounded-lg p-5 h-[60vh] w-[40vw] flex flex-col items-center justify-center">
         <div className="mb-5">
           <BsFillPersonFill size={120} />
         </div>
+        <p>{auth.currentUser?.displayName}</p>
         <button className="btn btn-primary" onClick={signIn}>
           Entrar com o Google
         </button>
@@ -42,5 +43,5 @@ export default function Login() {
 
 const signIn = async () => {
   const provider = new GoogleAuthProvider();
-  await signInWithRedirect(auth, provider);
+  await signInWithPopup(auth, provider);
 };
