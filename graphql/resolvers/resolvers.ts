@@ -9,8 +9,34 @@ import {
   where,
   query,
   documentId,
+  setDoc,
 } from 'firebase/firestore';
-import { Resolvers, Note, Layout, SaveNoteInput, Tag } from '../types/graphql';
+import {
+  Resolvers,
+  Note,
+  Layout,
+  NoteInput,
+  Tag,
+  MuralInput,
+  Mural,
+} from '../types/graphql';
+import fetcher from '@/src/fetcher';
+
+function inputToNote(noteInput: FstoreNote): Note {
+  return {
+    ...noteInput,
+    id: `${noteInput.id}`,
+    owner: {
+      id: 'todo',
+      email: 'todo',
+      name: 'todo',
+    },
+    title: 'todo',
+    stats: [],
+    tags: [],
+    group: null,
+  };
+}
 
 const resolvers: Resolvers = {
   Query: {
@@ -18,8 +44,10 @@ const resolvers: Resolvers = {
     world: () => 'World!',
 
     note: async (_, args) => {
-      return await getDocument<FstoreNote>(Fstore.NOTES, args.id);
+      const noteInput = await getDocument<FstoreNote>(Fstore.NOTES, args.id);
+      return noteInput ? inputToNote(noteInput) : null;
     },
+
     notes: async (_, { uid }) => {
       const q = query(
         collection(db, Fstore.NOTES),
@@ -27,42 +55,59 @@ const resolvers: Resolvers = {
       );
       const docs = (await getDocs(q)).docs;
       const notes = docs.map((d) => d.data() as FstoreNote);
-      return notes;
+      return notes.map((n) => inputToNote(n));
     },
-    layout: async (_, args) => {
+
+    mural: async (_, args) => {
       const doc = await getDocument<FstoreLayouts>(Fstore.LAYOUTS, args.uid);
       return doc
         ? {
-            uid: `${args.uid}`,
-            ...doc,
+            // 1 to 1 map
+            uid: `${doc.uid}`,
+            layouts: doc.layouts as Layout[],
           }
         : null;
     },
+
     tags: async (_, args) => {
       return (
         (await getDocument<FstoreTags>(Fstore.TAGS, args.uid))?.tags ?? null
       );
     },
   },
+
   Mutation: {
     createNote: async (_, args) => {
-      const _doc = await addDoc(collection(db, Fstore.NOTES), args.note);
+      const note: FstoreNote = args.note;
+      // const obj = await addDoc(collection(db, Fstore.NOTES), args.note);
+      const ok = await setDocument(Fstore.NOTES, note.id, note);
       return {
-        id: _doc.id,
-        ...args.note,
+        success: true, // TODO err handling
       };
     },
+
     saveNote: async (_, args) => {
-      // TODO
-      const note: SaveNoteInput = {
-        ...args.note,
-      };
+      const note: FstoreNote = args.note;
+      const ok = await setDocument(Fstore.NOTES, note.id, note);
       return {
-        success: true,
+        success: ok,
       };
     },
+
+    saveMural: async (_, args) => {
+      const layout: FstoreLayouts = {
+        uid: `${args.mural.uid}`,
+        layouts: args.mural.layouts,
+      };
+      const ok = await setDocument(Fstore.LAYOUTS, layout.uid!, layout);
+      return {
+        success: ok,
+      };
+    },
+
     teste: () => ({ success: true, teste: 'caso geral' }),
   },
+
   StatusOk: {
     teste: (parent) =>
       parent.teste === 'caso geral'
@@ -80,6 +125,14 @@ async function getDocument<T extends FstoreData>(
   if (!r.exists()) return null;
   return r.data() as T;
 }
+async function setDocument(
+  collection: Fstore,
+  id: string | number,
+  data: FstoreData,
+) {
+  const [, err] = await fetcher(setDoc(doc(db, collection, `${id}`), data));
+  return err === null;
+}
 
 //
 
@@ -89,11 +142,8 @@ enum Fstore {
   LAYOUTS = 'layouts',
 }
 type FstoreData = FstoreNote | FstoreLayouts | FstoreTags;
-// interface FstoreNote {}
-type FstoreNote = Note;
-type FstoreLayouts = {
-  layouts: Layout[];
-};
+type FstoreNote = NoteInput;
+type FstoreLayouts = MuralInput;
 type FstoreTags = {
   tags: Tag[];
 };

@@ -11,9 +11,9 @@ const GET_DATA = graphql(`
 `);
 
 const CREATE_NOTE = graphql(`
-  mutation Mutation($note: CreateNoteInput!) {
+  mutation Mutation($note: NoteInput!) {
     createNote(note: $note) {
-      id
+      success
     }
   }
 `);
