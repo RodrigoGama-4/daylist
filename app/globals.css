@@ -10,9 +10,9 @@
 }
 
 #mural {
-  font-family: 'Pangolin';
+  font-family: 'Pangolin', cursive;
 }
 
 :root {
-  font-family: 'Roboto';
+  font-family: 'Roboto', sans-serif;
 }
