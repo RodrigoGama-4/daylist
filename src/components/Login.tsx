@@ -20,6 +20,7 @@ export default function Login() {
         ${user.displayName}
         ${user.email}
         ${user.photoURL}
+        
       `);
       router.push('/');
     });
