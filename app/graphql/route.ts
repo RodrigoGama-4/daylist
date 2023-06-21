@@ -2,12 +2,13 @@ import { ApolloServer } from '@apollo/server';
 import { startServerAndCreateNextHandler } from '@as-integrations/next';
 import { ApolloServerPluginUsageReportingDisabled } from '@apollo/server/plugin/disabled';
 
-import resolvers from '@/graphql/resolvers/hello';
-import typeDefs from '@/graphql/schemas/hello';
+import resolvers from '@/graphql/resolvers/resolvers';
+import queries from '@/graphql/schemas/queries';
+import mutations from '@/graphql/schemas/mutations';
 
 const server = new ApolloServer({
   resolvers,
-  typeDefs,
+  typeDefs: [queries, mutations],
   introspection: true,
   plugins: [ApolloServerPluginUsageReportingDisabled()],
 });

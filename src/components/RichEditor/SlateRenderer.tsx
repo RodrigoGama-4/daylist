@@ -93,7 +93,7 @@ export const ElementRenderer = ({
         <h1
           {...attributes}
           style={{ textAlign: element.align }}
-          className="text-2xl font-semibold p-1 px-2 border-b-2 border-black border-opacity-10"
+          className="text-2xl font-semibold p-1 px-2 border-b-2 border-black border-opacity-10 text-justify"
         >
           {children}
         </h1>

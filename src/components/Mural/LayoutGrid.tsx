@@ -22,23 +22,28 @@ export default function LayoutGrid({
   const [layouts, setLayouts] = useState<Layout[]>([]);
   const { windowX, windowY } = useWindowSize();
 
-  const cellSize = 32; // pixels, X & Y
-  const gridMargin = 4;
-  const cellCountX = windowX / (cellSize + gridMargin); // grid units
-  const cellCountY = windowY / (cellSize + gridMargin);
+  const cellSize = 16; // pixels, X & Y
+  const gridMargin = 0; // gridMargin != 0 quebra adição de nota em Y
+  const cellCountX = windowX / (cellSize + gridMargin), // grid units
+    cellCountY = windowY / (cellSize + gridMargin);
+  const cellWidth = 14,
+    cellHeight = 10;
 
   useEffect(() => {
     const handleNoteCreation = (point: Point) => {
       if (!windowX || !windowY) return;
-      const x = Math.round(point.x / cellSize);
-      const y = Math.round(point.y / cellSize);
+      const main = document.querySelector('main');
+      const pointX = point.x,
+        pointY = point.y + main!.scrollTop;
+      const x = Math.floor(pointX / cellSize) - Math.floor(cellWidth / 2);
+      const y = Math.floor(pointY / cellSize) - Math.floor(cellHeight / 2);
       setLayouts((L) => [
         ...L,
         {
           x,
           y,
-          w: 5,
-          h: 5, // iguais => quadrado
+          w: cellWidth,
+          h: cellHeight,
           i: Date.now().toString(), // key
         },
       ]);
@@ -62,7 +67,7 @@ export default function LayoutGrid({
           draggableHandle: '.react-draggable-handle',
           preventCollision: true,
           allowOverlap: true,
-          autoSize: false,
+          autoSize: true,
           useCSSTransforms: false,
           transformScale: 1,
         }}
