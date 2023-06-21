@@ -30,6 +30,7 @@ function inputToNote(noteInput: FstoreNote): Note {
       id: 'todo',
       email: 'todo',
       name: 'todo',
+      photoUrl: '',
     },
     title: 'todo',
     stats: [],

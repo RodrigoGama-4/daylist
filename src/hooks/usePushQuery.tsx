@@ -5,10 +5,10 @@ import {
   useSearchParams,
 } from 'next/navigation';
 
-export default function usePushQuery() {
-  const router = useRouter();
+export default function useQueryBuilder() {
+  // const router = useRouter();
   const query = useSearchParams();
-  function pushQuery({
+  function makeQuery({
     add: toAdd = {},
     rem: toRem = {},
   }: {
@@ -51,10 +51,10 @@ export default function usePushQuery() {
       });
     });
     const route = `${window.location.pathname}?${newQuery.toString()}`;
-    router.push(route);
+    // router.push(route);
     return route;
   }
-  return { pushQuery };
+  return { makeQuery };
 }
 
 export function getQueryString(query: ReadonlyURLSearchParams) {
