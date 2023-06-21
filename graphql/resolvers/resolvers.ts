@@ -1,4 +1,3 @@
-'use server';
 /** Typed resolvers */
 import { auth, db } from '@/src/firebase';
 import {
