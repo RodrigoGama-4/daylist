@@ -2,6 +2,7 @@ import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { BsPencilSquare } from 'react-icons/bs';
 import { motion, Variants, AnimatePresence } from 'framer-motion';
+import { auth } from '../firebase';
 
 export default function AccountInfo({ isVisible }: { isVisible: boolean }) {
   const router = useRouter();
@@ -18,6 +19,7 @@ export default function AccountInfo({ isVisible }: { isVisible: boolean }) {
       </motion.button>
     </div>
   );
+
   const variants: Variants = {
     fechado: {
       opacity: 0,
@@ -39,6 +41,44 @@ export default function AccountInfo({ isVisible }: { isVisible: boolean }) {
     },
   };
 
+  //DADOS DO usuarios
+  const user = auth.currentUser;
+  let userDetails = null;
+  if (user) {
+    const displayName = user.displayName;
+    const email = user.email;
+    const photoURL = user.photoURL;
+
+    userDetails = (
+      <div className="">
+        {photoURL && (
+          <div className="d-flex align-items-center position-relative">
+            <img src={photoURL} alt="User Photo" className="rounded-circle" />
+            <hr className="line flex-grow-1 ml-2" />
+          </div>
+        )}
+
+        <div
+          className="d-flex position-relative"
+          style={{ left: 110, bottom: 40 }}
+        >
+          <p
+            className="font-weight-bold display-name position-relative"
+            style={{ fontWeight: 'bold', fontSize: '2rem' }}
+          >
+            {displayName},
+          </p>
+          <p
+            className="position-relative"
+            style={{ top: 15, left: 20, fontSize: '1.4rem' }}
+          >
+            definetly from earth
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <AnimatePresence>
@@ -52,7 +92,7 @@ export default function AccountInfo({ isVisible }: { isVisible: boolean }) {
             exit={'fimOverlay'}
           >
             <motion.div
-              className="position-absolute bg-white p-4 rounded d-flex flex-column align-items-center justify-content-center"
+              className="position-absolute bg-white p-4 rounded d-flex flex-column shadow-lg"
               style={{
                 height: '35rem',
                 width: '60rem',
@@ -64,6 +104,8 @@ export default function AccountInfo({ isVisible }: { isVisible: boolean }) {
               onClick={(e) => e.stopPropagation()}
             >
               {buttonEdit}
+              {userDetails}
+              <p></p>
             </motion.div>
           </motion.div>
         )}
