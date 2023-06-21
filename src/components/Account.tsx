@@ -94,8 +94,8 @@ export default function AccountInfo({ isVisible }: { isVisible: boolean }) {
             <motion.div
               className="position-absolute bg-white p-4 rounded d-flex flex-column shadow-lg"
               style={{
-                height: '35rem',
-                width: '60rem',
+                height: '25rem',
+                width: '45rem',
               }}
               variants={variants}
               initial={'fechado'}
