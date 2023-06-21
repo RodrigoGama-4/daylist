@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import AccountInfo from './Account';
 import { motion } from 'framer-motion';
 import { CustomNoteTree } from './NoteTree';
-import usePushQuery from '../hooks/usePushQuery';
+import useQueryBuilder from '../hooks/usePushQuery';
 
 enum NavOption {
   MY_NOTES = 'my_notes',
@@ -14,14 +14,16 @@ enum NavOption {
 
 export default function CustomNavbar() {
   const buttonScale = 1.1;
+  const router = useRouter();
   const query = useSearchParams();
   const navQuery = query.getAll('nav');
-  const { pushQuery } = usePushQuery();
+  const { makeQuery } = useQueryBuilder();
   const toggleNav = (opt: NavOption) => {
-    const q = navQuery.includes(opt)
-      ? { rem: { nav: opt } }
-      : { add: { nav: opt } };
-    pushQuery(q);
+    const isOpen = navQuery.includes(opt);
+    const q = isOpen ? { rem: { nav: opt } } : { add: { nav: opt } };
+    const route = makeQuery(q);
+    if (isOpen) router.replace(route);
+    else router.push(route);
   };
 
   return (

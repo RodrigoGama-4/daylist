@@ -1,9 +1,9 @@
 'use client';
-import usePushQuery from '@/src/hooks/usePushQuery';
+import useQueryBuilder from '@/src/hooks/usePushQuery';
 import _ from 'lodash';
 
 export default function Page() {
-  const { pushQuery } = usePushQuery();
+  const { pushQuery } = useQueryBuilder();
   return (
     <main className="flex flex-col p-10">
       <button

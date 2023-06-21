@@ -1,3 +1,4 @@
+'use server';
 /** Typed resolvers */
 import { auth, db } from '@/src/firebase';
 import {
@@ -30,6 +31,7 @@ function inputToNote(noteInput: FstoreNote): Note {
       id: 'todo',
       email: 'todo',
       name: 'todo',
+      photoUrl: '',
     },
     title: 'todo',
     stats: [],

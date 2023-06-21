@@ -46,7 +46,7 @@ const typeDefs = gql`
     id: ID!
     name: String!
     email: String!
-    photoUrl: String
+    photoUrl: String!
     connections: [User!]
     groups: [SharingGroup!]
   }
