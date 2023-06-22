@@ -121,7 +121,6 @@ async function getDocument<T extends FstoreData>(
   id: string | number,
 ) {
   const r = await getDoc(doc(db, colecao, `${id}`));
-  console.log(colecao, id, r.exists());
   if (!r.exists()) return null;
   return r.data() as T;
 }

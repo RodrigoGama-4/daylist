@@ -1,10 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, use } from 'react';
 import RGL, { WidthProvider, Layout } from 'react-grid-layout';
 import _ from 'lodash';
-import { graphql } from '@/graphql/types';
-import { useQuery, useLazyQuery } from '@apollo/client';
 
 import { MuralElement, ResizeHandle } from './MuralElement';
 import { Subject } from 'rxjs';
@@ -13,22 +11,7 @@ import useWindowSize from '@/src/hooks/useWindowSize';
 
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
-import { auth } from '@/src/firebase';
-import { useAuthState } from 'react-firebase-hooks/auth';
-
-const GET_LAYOUTS = graphql(`
-  query UserLayouts($uid: ID!) {
-    mural(uid: $uid) {
-      layouts {
-        i
-        h
-        w
-        x
-        y
-      }
-    }
-  }
-`);
+import useUserMural from '@/src/hooks/useUserMural';
 
 // GRID
 export default function LayoutGrid({
@@ -40,6 +23,7 @@ export default function LayoutGrid({
 }) {
   // o último elemento é o primeiro a ser visto (como se fosse z-index)
   const [layouts, setLayouts] = useState<Layout[]>([]);
+  const mural = useUserMural(() => {}); // (l) => setLayouts(l));
   const { windowX, windowY } = useWindowSize();
 
   const cellSize = 16; // pixels, X & Y
@@ -48,21 +32,6 @@ export default function LayoutGrid({
     cellCountY = windowY / (cellSize + gridMargin);
   const cellWidth = 14,
     cellHeight = 10;
-
-  const [user, loading, err] = useAuthState(auth);
-  const [getLayouts, { data: userLayouts }] = useLazyQuery(GET_LAYOUTS, {
-    variables: { uid: '84rmKtlAOBRRi7IGUY5gAVke2G02 ' },
-  });
-  useEffect(() => {
-    if (!user) return;
-    getLayouts({ variables: { uid: '84rmKtlAOBRRi7IGUY5gAVke2G02' } });
-  }, [user, getLayouts]);
-
-  useEffect(() => {
-    if (!userLayouts) return;
-    setLayouts(userLayouts.mural.layouts);
-    alert(userLayouts.mural.layouts);
-  }, [userLayouts]);
 
   useEffect(() => {
     const handleNoteCreation = (point: Point) => {
