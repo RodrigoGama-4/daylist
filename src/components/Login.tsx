@@ -9,23 +9,18 @@ import {
 } from 'firebase/auth';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 export default function Login() {
   const router = useRouter();
-
-  useEffect(() => {
-    const unsub = auth.onAuthStateChanged((user) => {
-      if (!user) return;
-      alert(`
-        ${user.displayName}
-        ${user.email}
-        ${user.photoURL}
-        
-      `);
-      router.push('/');
-    });
-    return () => unsub();
-  }, [router]);
+  const [user] = useAuthState(auth);
+  if (user) {
+    alert(`
+      ${user.displayName}
+      ${user.email}
+      ${user.photoURL}`);
+    router.push('/');
+  }
 
   return (
     <div className="flex justify-center items-center h-screen">
@@ -33,7 +28,7 @@ export default function Login() {
         <div className="mb-5">
           <BsFillPersonFill size={120} />
         </div>
-        <p>{auth.currentUser?.displayName}</p>
+        <p>{user?.displayName}</p>
         <button className="btn btn-primary" onClick={signIn}>
           Entrar com o Google
         </button>
