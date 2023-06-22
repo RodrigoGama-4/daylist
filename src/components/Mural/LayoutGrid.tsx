@@ -23,7 +23,7 @@ export default function LayoutGrid({
 }) {
   // o último elemento é o primeiro a ser visto (como se fosse z-index)
   const [layouts, setLayouts] = useState<Layout[]>([]);
-  const mural = useUserMural(() => {}); // (l) => setLayouts(l));
+  const [, isLoadingMural] = useUserMural((l) => setLayouts(l));
   const { windowX, windowY } = useWindowSize();
 
   const cellSize = 16; // pixels, X & Y

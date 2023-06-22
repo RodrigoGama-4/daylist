@@ -1,16 +1,29 @@
 'use client';
+import Spinner from 'react-bootstrap/Spinner';
 import LayoutGrid, { onAskNoteCreation$ } from './LayoutGrid';
 import { BiNote } from 'react-icons/bi';
-import { useRef, useState } from 'react';
+import { useRef, useState, use, useEffect } from 'react';
+import useUserMural, { getUserMural } from '@/src/hooks/useUserMural';
+import { Layout } from 'react-grid-layout';
 
 export default function Mural() {
+  // Layout do mural armazenado no DB
+  const [, isLoadingMural] = useUserMural();
+
+  // Criação de notas
   const [isCreateMode, setIsCreatingNote] = useState(false);
-  /** Criação de notas */
   const toggleCreateMode = () => setIsCreatingNote(!isCreateMode);
+
+  if (isLoadingMural)
+    return (
+      <div className="absolute top-0 bottom-0 left-0 right-0 flex justify-center items-center border-4">
+        <Spinner animation="border" variant="primary" />
+      </div>
+    );
   return (
     <div
       id="mural"
-      className={`flex flex-col min-h-full ${
+      className={`relative flex flex-col min-h-full ${
         isCreateMode ? 'cursor-cell' : ''
       }`}
       onPointerDown={(e) => {

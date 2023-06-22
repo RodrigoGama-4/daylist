@@ -72,7 +72,7 @@ export default function AccountInfo({ isVisible }: { isVisible: boolean }) {
             className="position-relative"
             style={{ top: 15, left: 20, fontSize: '1.4rem' }}
           >
-            definetly from earth
+            definetly from Earth
           </p>
         </div>
       </div>
