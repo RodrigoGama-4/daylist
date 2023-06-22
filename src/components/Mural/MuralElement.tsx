@@ -33,16 +33,16 @@ export function MuralElement({ layout }: { layout: RGL.Layout }) {
       right: 0,
       width: '600px',
       height: ['82vh', '90vh'],
-      margin: 'auto',
+      // margin: 'auto',
     },
     notEditing: {
       position: ['fixed', 'absolute'],
       width: ['fit', ''],
       height: ['fit', ''],
-      margin: '0',
+      // margin: '',
     },
     hover: {
-      outline: isEditMode ? '' : `4px solid #${color}`,
+      outline: isEditMode ? '0x solid transparent' : `4px solid #${color}`,
     },
   };
   const EditingOverlay = (
@@ -62,7 +62,7 @@ export function MuralElement({ layout }: { layout: RGL.Layout }) {
         key={layout.i}
         id={`item-${layout.i}`}
         onDoubleClick={() => !isEditMode && toggleEditMode()}
-        className={`drop-shadow h-full w-full overflow-x-hidden flex flex-col ${
+        className={`drop-shadow h-full w-full overflow-x-hidden flex flex-col m-auto ${
           !isEditMode ? 'select-none react-draggable-handle' : 'z-50 shadow-lg'
         }`}
         style={{

@@ -1,14 +1,17 @@
 'use client';
-import { useEffect, useState } from 'react';
+
+import { useEffect, useState, use } from 'react';
 import RGL, { WidthProvider, Layout } from 'react-grid-layout';
-import { MuralElement, ResizeHandle } from './MuralElement';
 import _ from 'lodash';
+
+import { MuralElement, ResizeHandle } from './MuralElement';
 import { Subject } from 'rxjs';
 import Point from '@/src/utils/Point';
 import useWindowSize from '@/src/hooks/useWindowSize';
 
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
+import useUserMural from '@/src/hooks/useUserMural';
 
 // GRID
 export default function LayoutGrid({
@@ -20,6 +23,7 @@ export default function LayoutGrid({
 }) {
   // o último elemento é o primeiro a ser visto (como se fosse z-index)
   const [layouts, setLayouts] = useState<Layout[]>([]);
+  const [, isLoadingMural] = useUserMural((l) => setLayouts(l));
   const { windowX, windowY } = useWindowSize();
 
   const cellSize = 16; // pixels, X & Y

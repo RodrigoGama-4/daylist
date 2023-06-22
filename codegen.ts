@@ -8,6 +8,7 @@ const config: CodegenConfig = {
   documents: [
     // TODO uncomment to use types
     'app/**/*.{ts,tsx,gql,graphql,}',
+    'src/**/*.{ts,tsx,gql,graphql,}',
 
     // deixar aqui, senão o watcher não atualiza ao salvar
     'graphql/**/*.{ts,tsx,gql,graphql}',
