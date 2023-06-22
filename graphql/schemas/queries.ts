@@ -14,7 +14,7 @@ const typeDefs = gql`
     world: String!
     note(id: ID!): Note
     notes(uid: ID!): [Note!]!
-    mural(uid: ID!): Mural
+    mural(uid: ID!): Mural!
     tags(uid: ID!): [Tag!]
   }
   type Mural {

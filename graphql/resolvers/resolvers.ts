@@ -61,13 +61,11 @@ const resolvers: Resolvers = {
 
     mural: async (_, args) => {
       const doc = await getDocument<FstoreLayouts>(Fstore.LAYOUTS, args.uid);
-      return doc
-        ? {
-            // 1 to 1 map
-            uid: `${doc.uid}`,
-            layouts: doc.layouts as Layout[],
-          }
-        : null;
+      return {
+        // 1 to 1 map
+        uid: `${args.uid}`,
+        layouts: (doc?.layouts as Layout[]) ?? [],
+      };
     },
 
     tags: async (_, args) => {
@@ -119,10 +117,11 @@ const resolvers: Resolvers = {
 export default resolvers;
 
 async function getDocument<T extends FstoreData>(
-  collection: Fstore,
+  colecao: Fstore,
   id: string | number,
 ) {
-  const r = await getDoc(doc(db, collection, `${id}`));
+  const r = await getDoc(doc(db, colecao, `${id}`));
+  console.log(colecao, id, r.exists());
   if (!r.exists()) return null;
   return r.data() as T;
 }

@@ -5,11 +5,31 @@ import { withHistory } from 'slate-history';
 import { Slate, withReact } from 'slate-react';
 import withNoteLayout from './withNoteLayout';
 
+import { graphql } from '@/graphql/types';
+import { auth } from '@/src/firebase';
+import { useQuery } from '@apollo/client';
+
+const GET_NOTES = graphql(`
+  query NoteContent($id: ID!) {
+    note(id: $id) {
+      content
+    }
+  }
+`);
+
 export default function SlateProvider({ children }: { children: ReactNode }) {
   const [editor] = useState(() =>
     withNoteLayout(withHistory(withReact(createEditor()))),
   );
   const [initialValue, setInitialValue] = useState<Descendant[]>();
+
+  // const { data, loading, error } = useQuery(GET_NOTES, {
+  //   variables: { id: 'FAxqEfBzPA0IgO9pZOnI' },
+  // });
+  // useEffect(() => {
+  //   if (!data) return;
+  //   alert(data.note?.content);
+  // }, [data]);
 
   useEffect(() => {
     // const db = localStorage.getItem('content');
