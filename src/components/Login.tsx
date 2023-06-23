@@ -1,26 +1,15 @@
 'use client';
 import { BsFillPersonFill } from 'react-icons/bs';
-import { auth } from '../firebase';
-import {
-  GoogleAuthProvider,
-  signInWithRedirect,
-  getRedirectResult,
-  signInWithPopup,
-} from 'firebase/auth';
-import { useEffect } from 'react';
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
-import { useAuthState } from 'react-firebase-hooks/auth';
+import { useEffect } from 'react';
+import { useUser } from '../providers/UserContext';
+import { auth } from '../firebase';
 
 export default function Login() {
   const router = useRouter();
-  const [user] = useAuthState(auth);
-  if (user) {
-    alert(`
-      ${user.displayName}
-      ${user.email}
-      ${user.photoURL}`);
-    router.push('/');
-  }
+  const user = useUser();
+  if (user) router.push('/');
 
   return (
     <div className="flex justify-center items-center h-screen">

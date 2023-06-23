@@ -2,23 +2,11 @@ import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { BsPencilSquare } from 'react-icons/bs';
 import { motion, Variants, AnimatePresence } from 'framer-motion';
-import { auth } from '../firebase';
+import { useUser } from '../providers/UserContext';
 
 export default function AccountInfo({ isVisible }: { isVisible: boolean }) {
   const router = useRouter();
-  const buttonEdit = (
-    <div>
-      <motion.button
-        className="btn btn-primary"
-        style={{ position: 'absolute', top: 5, right: 5 }}
-        whileHover={{
-          scale: 1.1,
-        }}
-      >
-        <BsPencilSquare />
-      </motion.button>
-    </div>
-  );
+  const user = useUser();
 
   const variants: Variants = {
     fechado: {
@@ -42,74 +30,82 @@ export default function AccountInfo({ isVisible }: { isVisible: boolean }) {
   };
 
   //DADOS DO usuarios
-  const user = auth.currentUser;
-  let userDetails = null;
-  if (user) {
-    const displayName = user.displayName;
-    const email = user.email;
-    const photoURL = user.photoURL;
-
-    userDetails = (
-      <div className="">
-        {photoURL && (
-          <div className="d-flex align-items-center position-relative">
-            <img src={photoURL} alt="User Photo" className="rounded-circle" />
-            <hr className="line flex-grow-1 ml-2" />
-          </div>
-        )}
-
-        <div
-          className="d-flex position-relative"
-          style={{ left: 110, bottom: 40 }}
-        >
-          <p
-            className="font-weight-bold display-name position-relative"
-            style={{ fontWeight: 'bold', fontSize: '2rem' }}
-          >
-            {displayName},
-          </p>
-          <p
-            className="position-relative"
-            style={{ top: 15, left: 20, fontSize: '1.4rem' }}
-          >
-            definetly from Earth
-          </p>
+  const userDetails = user && (
+    <div className="">
+      {user.photoURL && (
+        <div className="d-flex align-items-center position-relative">
+          <img
+            src={user.photoURL}
+            alt="User Photo"
+            className="rounded-circle"
+          />
+          <hr className="line flex-grow-1 ml-2" />
         </div>
+      )}
+
+      <div
+        className="d-flex position-relative"
+        style={{ left: 110, bottom: 40 }}
+      >
+        <p
+          className="font-weight-bold display-name position-relative"
+          style={{ fontWeight: 'bold', fontSize: '2rem' }}
+        >
+          {user.displayName},
+        </p>
+        <p
+          className="position-relative"
+          style={{ top: 15, left: 20, fontSize: '1.4rem' }}
+        >
+          definetly from Earth
+        </p>
       </div>
-    );
-  }
+    </div>
+  );
+
+  const buttonEdit = (
+    <div>
+      <motion.button
+        className="btn btn-primary"
+        style={{ position: 'absolute', top: 5, right: 5 }}
+        whileHover={{
+          scale: 1.1,
+        }}
+      >
+        <BsPencilSquare />
+      </motion.button>
+    </div>
+  );
 
   return (
-    <>
-      <AnimatePresence>
-        {isVisible && (
+    <AnimatePresence>
+      {isVisible && (
+        <motion.div
+          className="position-fixed w-100 h-100 d-flex align-items-center justify-content-center"
+          onClick={() => router.back()}
+          variants={variants}
+          initial={'fimOverlay'}
+          animate={'aniOverlay'}
+          exit={'fimOverlay'}
+        >
           <motion.div
-            className="position-fixed w-100 h-100 d-flex align-items-center justify-content-center"
-            onClick={() => router.back()}
+            className="position-absolute bg-white p-4 rounded d-flex flex-column shadow-lg"
+            style={{
+              height: '25rem',
+              width: '45rem',
+            }}
             variants={variants}
-            initial={'fimOverlay'}
-            animate={'aniOverlay'}
-            exit={'fimOverlay'}
+            initial={'fechado'}
+            animate={'aberto'}
+            exit={'fechado'}
+            onClick={(e) => e.stopPropagation()}
           >
-            <motion.div
-              className="position-absolute bg-white p-4 rounded d-flex flex-column shadow-lg"
-              style={{
-                height: '25rem',
-                width: '45rem',
-              }}
-              variants={variants}
-              initial={'fechado'}
-              animate={'aberto'}
-              exit={'fechado'}
-              onClick={(e) => e.stopPropagation()}
-            >
-              {buttonEdit}
-              {userDetails}
-              <p></p>
-            </motion.div>
+            {buttonEdit}
+            {userDetails}
+            <p></p>
           </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

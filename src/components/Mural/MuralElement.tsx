@@ -18,7 +18,7 @@ export function MuralElement({ layout }: { layout: RGL.Layout }) {
     onToggleEditMode$.next(v);
   };
 
-  const [color, setColor] = useState('FFF');
+  const [color, setColor] = useState('AAA');
   useEffect(() => {
     const randomColor = Math.floor(Math.random() * 16777215).toString(16);
     setColor(randomColor);

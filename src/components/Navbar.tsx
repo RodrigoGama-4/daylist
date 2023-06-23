@@ -1,7 +1,7 @@
 'use client';
 import { Navbar, Container, Nav } from 'react-bootstrap';
 import { BsFillStarFill, BsFillPersonFill, BsStack } from 'react-icons/bs';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams, useRouter, redirect } from 'next/navigation';
 import AccountInfo from './Account';
 import { motion } from 'framer-motion';
 import { CustomNoteTree } from './NoteTree';
@@ -18,6 +18,7 @@ export default function CustomNavbar() {
   const query = useSearchParams();
   const navQuery = query.getAll('nav');
   const { makeQuery } = useQueryBuilder();
+
   const toggleNav = (opt: NavOption) => {
     const isOpen = navQuery.includes(opt);
     const q = isOpen ? { rem: { nav: opt } } : { add: { nav: opt } };
