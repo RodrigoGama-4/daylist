@@ -23,4 +23,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
   return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
 }
 
-export const useUser = () => useContext(UserContext);
+export const useUser = (onLoad?: (user: User) => void) => {
+  const _user = useContext(UserContext);
+  useEffect(() => {
+    if (!onLoad) return;
+    if (_user) onLoad(_user);
+  }, [_user, onLoad]);
+  return _user;
+};

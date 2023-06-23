@@ -34,5 +34,7 @@ export default function RootLayout({
 
 export const apolloClient = new ApolloClient({
   uri: '/graphql',
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    // addTypename: false,
+  }),
 });

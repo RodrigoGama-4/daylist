@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, use } from 'react';
-import RGL, { WidthProvider, Layout } from 'react-grid-layout';
+import RGL, { WidthProvider } from 'react-grid-layout';
 import _ from 'lodash';
 
 import { MuralElement, ResizeHandle } from './MuralElement';
@@ -12,6 +12,30 @@ import useWindowSize from '@/src/hooks/useWindowSize';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import useUserMural from '@/src/hooks/useUserMural';
+import { graphql } from '@/graphql/types';
+import { useMutation } from '@apollo/client';
+import { useUser } from '@/src/providers/UserContext';
+import { Layout } from '@/graphql/types/graphql';
+
+const SAVE_MURAL_LAYOUTS = graphql(`
+  mutation SaveMuralLayouts($mural: MuralInput!) {
+    saveMural(mural: $mural) {
+      success
+    }
+  }
+`);
+
+function toLayoutInput(layout: RGL.Layout): Layout {
+  const destr = ({ h, i, w, x, y }: Omit<Layout, 'note'>) => ({
+    h,
+    i,
+    note: 'TODO',
+    w,
+    x,
+    y,
+  });
+  return destr(layout);
+}
 
 // GRID
 export default function LayoutGrid({
@@ -22,10 +46,24 @@ export default function LayoutGrid({
   isCreateMode: boolean;
 }) {
   // o último elemento é o primeiro a ser visto (como se fosse z-index)
-  const [layouts, setLayouts] = useState<Layout[]>([]);
-  const [, isLoadingMural] = useUserMural((l) => setLayouts(l));
-  const { windowX, windowY } = useWindowSize();
+  const [layouts, setLayouts] = useState<RGL.Layout[]>([]);
+  useUserMural((l) => setLayouts(l));
+  const [saveLayouts, { data, loading, error }] =
+    useMutation(SAVE_MURAL_LAYOUTS);
+  const user = useUser();
+  useEffect(() => {
+    if (!user) return;
+    saveLayouts({
+      variables: {
+        mural: {
+          uid: user.uid,
+          layouts: layouts.map((l) => toLayoutInput(l)),
+        },
+      },
+    });
+  }, [user, layouts, saveLayouts]);
 
+  const { windowX, windowY } = useWindowSize();
   const cellSize = 16; // pixels, X & Y
   const gridMargin = 0; // gridMargin != 0 quebra adição de nota em Y
   const cellCountX = windowX / (cellSize + gridMargin), // grid units
@@ -41,6 +79,7 @@ export default function LayoutGrid({
         pointY = point.y + main!.scrollTop;
       const x = Math.floor(pointX / cellSize) - Math.floor(cellWidth / 2);
       const y = Math.floor(pointY / cellSize) - Math.floor(cellHeight / 2);
+      // TODO: save layout
       setLayouts((L) => [
         ...L,
         {
