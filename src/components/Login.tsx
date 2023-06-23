@@ -1,31 +1,15 @@
 'use client';
 import { BsFillPersonFill } from 'react-icons/bs';
-import { auth } from '../firebase';
-import {
-  GoogleAuthProvider,
-  signInWithRedirect,
-  getRedirectResult,
-  signInWithPopup,
-} from 'firebase/auth';
-import { useEffect } from 'react';
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { useUser } from '../providers/UserContext';
+import { auth } from '../firebase';
 
 export default function Login() {
   const router = useRouter();
-
-  useEffect(() => {
-    const unsub = auth.onAuthStateChanged((user) => {
-      if (!user) return;
-      alert(`
-        ${user.displayName}
-        ${user.email}
-        ${user.photoURL}
-        
-      `);
-      router.push('/');
-    });
-    return () => unsub();
-  }, [router]);
+  const user = useUser();
+  if (user) router.push('/');
 
   return (
     <div className="flex justify-center items-center h-screen">
@@ -33,7 +17,7 @@ export default function Login() {
         <div className="mb-5">
           <BsFillPersonFill size={120} />
         </div>
-        <p>{auth.currentUser?.displayName}</p>
+        <p>{user?.displayName}</p>
         <button className="btn btn-primary" onClick={signIn}>
           Entrar com o Google
         </button>

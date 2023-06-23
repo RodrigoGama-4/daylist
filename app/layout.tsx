@@ -2,6 +2,7 @@
 import './globals.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client';
+import { UserProvider } from '@/src/providers/UserContext';
 
 export default function RootLayout({
   children,
@@ -23,7 +24,9 @@ export default function RootLayout({
         />
       </head>
       <body className="h-full">
-        <ApolloProvider client={apolloClient}>{children}</ApolloProvider>
+        <UserProvider>
+          <ApolloProvider client={apolloClient}>{children}</ApolloProvider>
+        </UserProvider>
       </body>
     </html>
   );
