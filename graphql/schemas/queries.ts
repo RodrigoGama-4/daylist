@@ -19,6 +19,7 @@ const typeDefs = gql`
   }
   type Mural {
     uid: ID!
+    aspect: MuralAspect!
     layouts: [Layout!]!
   }
   type Layout {
@@ -91,6 +92,13 @@ const typeDefs = gql`
     LOW
     MEDIUM
     HIGH
+  }
+
+  enum MuralAspect {
+    LG
+    MD
+    SM
+    XS
   }
 `;
 

@@ -12,6 +12,7 @@ const typeDefs = gql`
   }
   input MuralInput {
     uid: ID!
+    aspect: MuralAspect!
     layouts: [LayoutInput!]!
   }
   input LayoutInput {

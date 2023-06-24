@@ -11,6 +11,7 @@ import RGL from 'react-grid-layout';
 
 /** Container para Note, Section ou Image */
 export function MuralElement({ layout }: { layout: RGL.Layout }) {
+  const itemID = `item-${layout.i}`;
   const [isEditMode, __setEditMode] = useState(false);
   const toggleEditMode = () => {
     const v = !isEditMode;
@@ -23,6 +24,14 @@ export function MuralElement({ layout }: { layout: RGL.Layout }) {
     const randomColor = Math.floor(Math.random() * 16777215).toString(16);
     setColor(randomColor);
   }, []);
+
+  useEffect(() => {
+    if (!isEditMode) return;
+    const self = document.querySelector(`#${itemID}`) as HTMLDivElement;
+    const rect = self.getBoundingClientRect();
+    const style = getComputedStyle(self);
+    console.log(rect.x, rect.y);
+  }, [isEditMode]);
 
   const variants: Variants = {
     editing: {
@@ -45,6 +54,7 @@ export function MuralElement({ layout }: { layout: RGL.Layout }) {
       outline: isEditMode ? '0x solid transparent' : `4px solid #${color}`,
     },
   };
+
   const EditingOverlay = (
     <div
       className={`fixed bottom-0 top-0 right-0 left-0 transition-all duration-500  backdrop-blur ${
@@ -55,19 +65,14 @@ export function MuralElement({ layout }: { layout: RGL.Layout }) {
       onClick={() => isEditMode && toggleEditMode()}
     />
   );
+
   return (
     <SlateProvider>
       {EditingOverlay}
       <motion.div
         key={layout.i}
-        id={`item-${layout.i}`}
+        id={itemID}
         onDoubleClick={() => !isEditMode && toggleEditMode()}
-        className={`drop-shadow h-full w-full overflow-x-hidden flex flex-col m-auto ${
-          !isEditMode ? 'select-none react-draggable-handle' : 'z-50 shadow-lg'
-        }`}
-        style={{
-          background: '#' + color,
-        }}
         layout
         animate={isEditMode ? 'editing' : 'notEditing'}
         variants={variants}
@@ -75,6 +80,12 @@ export function MuralElement({ layout }: { layout: RGL.Layout }) {
         transition={{
           bounce: 1,
           ease: 'easeOut',
+        }}
+        className={`drop-shadow h-full w-full overflow-x-hidden flex flex-col m-auto ${
+          !isEditMode ? 'select-none react-draggable-handle' : 'z-50 shadow-lg'
+        }`}
+        style={{
+          background: '#' + color,
         }}
       >
         <RichEditor className="flex-1 m-0 p-1 px-4" readOnly={!isEditMode} />

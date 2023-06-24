@@ -8,7 +8,7 @@ import RGL from 'react-grid-layout';
 import { useMutation } from '@apollo/client';
 import { graphql } from '@/graphql/types';
 import { useUser } from '@/src/providers/UserContext';
-import { Layout } from '@/graphql/types/graphql';
+import { Layout, MuralAspect } from '@/graphql/types/graphql';
 import { auth } from '@/src/firebase';
 import * as rx from 'rxjs';
 
@@ -26,7 +26,6 @@ export default function Mural() {
       .pipe(
         rx.debounceTime(1500), // pega última mudança dentro de 2s
       )
-
       .subscribe((layouts) => {
         console.log('salvando mural no firestore');
         const user = auth.currentUser;
@@ -35,6 +34,7 @@ export default function Mural() {
           variables: {
             mural: {
               uid: user.uid,
+              aspect: MuralAspect.Lg, // TODO
               layouts: layouts.map((l) => toLayoutInput(l)),
             },
           },
