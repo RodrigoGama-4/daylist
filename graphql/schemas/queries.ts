@@ -19,7 +19,6 @@ const typeDefs = gql`
   }
   type Mural {
     uid: ID!
-    aspect: MuralAspect!
     layouts: [Layout!]!
   }
   type Layout {

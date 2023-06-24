@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, use } from 'react';
+import { useEffect, useState, use, useCallback } from 'react';
 import RGL, { WidthProvider, Responsive } from 'react-grid-layout';
 import _ from 'lodash';
 
@@ -10,8 +10,8 @@ import * as rx from 'rxjs';
 import Point from '@/src/utils/Point';
 import useWindowSize from '@/src/hooks/useWindowSize';
 
-import 'react-grid-layout/css/styles.css';
-import 'react-resizable/css/styles.css';
+// import 'react-grid-layout/css/styles.css';
+// import 'react-resizable/css/styles.css';
 import useUserMural from '@/src/hooks/useUserMural';
 
 // GRID
@@ -59,26 +59,13 @@ export default function LayoutGrid({
     return () => sub.unsubscribe();
   }, [windowX, windowY]);
 
-  const half = (layout: RGL.Layout[]) =>
-    layouts.map((l) => ({
-      ...l,
-      w: Math.round(l.w / 2),
-      x: Math.round(l.x / 2),
-    }));
-  
-  const [aspect, setAspect] = useState<Aspect>(); // TODO ler do gql
-  useEffect(() => {
-    const sub = onAspectChange$
-      .pipe(rx.distinctUntilChanged())
-      .subscribe((a) => setAspect(a));
-    return () => sub.unsubscribe();
-  }, []);
-  
   return (
     <div className={`${className ?? ''}`}>
       <ReactGridLayout
         {...{
-          // layout: layouts,
+          layout: layouts,
+          cols: 100,
+          // cols: Math.round(cellCountX),
           onLayoutChange: (l) => {
             onLayoutChange$.next(l);
             setLayouts(l);
@@ -86,20 +73,15 @@ export default function LayoutGrid({
           onDragStop: setLayouts,
           onResizeStop: setLayouts,
           rowHeight: cellSize,
-          // cols: Math.round(cellCountX),
           margin: [gridMargin, gridMargin],
           resizeHandle: ResizeHandle(),
           draggableHandle: '.react-draggable-handle',
-          preventCollision: true,
+          preventCollision: false,
           allowOverlap: true,
           autoSize: true,
           useCSSTransforms: false,
           transformScale: 1,
         }}
-        layouts={{ lg: layouts }}
-        breakpoints={gridAspect.breakpoints}
-        cols={gridAspect.cols}
-        onBreakpointChange={(scr, cols) => onAspectChange$.next(scr as Aspect)}
       >
         {layouts.map((layout, j) => (
           <div
@@ -124,23 +106,8 @@ export default function LayoutGrid({
   );
 }
 
-const ReactGridLayout = WidthProvider(RGL.Responsive);
+const ReactGridLayout = WidthProvider(RGL);
 
 /** Observes the onDragEnd point in the _Mural_ */
 export const onAskNoteCreation$ = new Subject<Point>();
 export const onLayoutChange$ = new Subject<RGL.Layout[]>();
-
-const aspects = ['lg', 'md', 'sm', 'xs'] as const;
-type Aspect = (typeof aspects)[number];
-type AspectMap = { [key in Aspect]: number };
-const gridAspect: { [k in 'breakpoints' | 'cols']: AspectMap } = {
-  breakpoints: { lg: 1024, md: 768, sm: 640, xs: 480 },
-  cols: {
-    lg: 40,
-    md: 20,
-    sm: 10,
-    xs: 5,
-  },
-};
-const onAspectChange$ = new Subject<Aspect>();
-onAspectChange$.pipe(rx.distinctUntilChanged()).subscribe(console.log);

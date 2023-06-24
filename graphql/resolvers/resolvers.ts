@@ -65,7 +65,6 @@ const resolvers: Resolvers = {
       return {
         // 1 to 1 map
         uid: `${args.uid}`,
-        aspect: doc?.aspect ?? MuralAspect.Md,
         layouts: (doc?.layouts as Layout[]) ?? [],
       };
     },
@@ -98,7 +97,6 @@ const resolvers: Resolvers = {
     saveMural: async (_, args) => {
       const layout: FstoreLayouts = {
         uid: `${args.mural.uid}`,
-        aspect: args.mural.aspect,
         layouts: args.mural.layouts,
       };
       const ok = await setDocument(Fstore.LAYOUTS, layout.uid!, layout);
