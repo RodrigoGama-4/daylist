@@ -5,37 +5,13 @@ import RGL, { WidthProvider } from 'react-grid-layout';
 import _ from 'lodash';
 
 import { MuralElement, ResizeHandle } from './MuralElement';
-import { Subject } from 'rxjs';
+import rx, { Subject } from 'rxjs';
 import Point from '@/src/utils/Point';
 import useWindowSize from '@/src/hooks/useWindowSize';
 
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import useUserMural from '@/src/hooks/useUserMural';
-import { graphql } from '@/graphql/types';
-import { useMutation } from '@apollo/client';
-import { useUser } from '@/src/providers/UserContext';
-import { Layout } from '@/graphql/types/graphql';
-
-const SAVE_MURAL_LAYOUTS = graphql(`
-  mutation SaveMuralLayouts($mural: MuralInput!) {
-    saveMural(mural: $mural) {
-      success
-    }
-  }
-`);
-
-function toLayoutInput(layout: RGL.Layout): Layout {
-  const destr = ({ h, i, w, x, y }: Omit<Layout, 'note'>) => ({
-    h,
-    i,
-    note: 'TODO',
-    w,
-    x,
-    y,
-  });
-  return destr(layout);
-}
 
 // GRID
 export default function LayoutGrid({
@@ -48,20 +24,6 @@ export default function LayoutGrid({
   // o último elemento é o primeiro a ser visto (como se fosse z-index)
   const [layouts, setLayouts] = useState<RGL.Layout[]>([]);
   useUserMural((l) => setLayouts(l));
-  const [saveLayouts, { data, loading, error }] =
-    useMutation(SAVE_MURAL_LAYOUTS);
-  const user = useUser();
-  useEffect(() => {
-    if (!user) return;
-    saveLayouts({
-      variables: {
-        mural: {
-          uid: user.uid,
-          layouts: layouts.map((l) => toLayoutInput(l)),
-        },
-      },
-    });
-  }, [user, layouts, saveLayouts]);
 
   const { windowX, windowY } = useWindowSize();
   const cellSize = 16; // pixels, X & Y
@@ -72,7 +34,7 @@ export default function LayoutGrid({
     cellHeight = 10;
 
   useEffect(() => {
-    const handleNoteCreation = (point: Point) => {
+    const handleCreation = (point: Point) => {
       if (!windowX || !windowY) return;
       const main = document.querySelector('main');
       const pointX = point.x,
@@ -91,7 +53,7 @@ export default function LayoutGrid({
         },
       ]);
     };
-    const sub = onAskNoteCreation$.subscribe(handleNoteCreation);
+    const sub = onAskNoteCreation$.subscribe(handleCreation);
     return () => sub.unsubscribe();
   }, [windowX, windowY]);
 
@@ -100,7 +62,10 @@ export default function LayoutGrid({
       <ReactGridLayout
         {...{
           layout: layouts,
-          onLayoutChange: setLayouts,
+          onLayoutChange: (l) => {
+            onLayoutChange$.next(l);
+            setLayouts(l);
+          },
           onDragStop: setLayouts,
           onResizeStop: setLayouts,
           rowHeight: cellSize,
@@ -130,7 +95,7 @@ export default function LayoutGrid({
               setLayouts(ls);
             }}
           >
-            <MuralElement {...{ layout }} />
+            <MuralElement layout={layout} />
           </div>
         ))}
       </ReactGridLayout>
@@ -142,3 +107,4 @@ const ReactGridLayout = WidthProvider(RGL);
 
 /** Observes the onDragEnd point in the _Mural_ */
 export const onAskNoteCreation$ = new Subject<Point>();
+export const onLayoutChange$ = new Subject<RGL.Layout[]>();
