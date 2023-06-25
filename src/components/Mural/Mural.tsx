@@ -26,7 +26,6 @@ export default function Mural() {
       .pipe(
         rx.debounceTime(1500), // pega última mudança dentro de 2s
       )
-
       .subscribe((layouts) => {
         console.log('salvando mural no firestore');
         const user = auth.currentUser;

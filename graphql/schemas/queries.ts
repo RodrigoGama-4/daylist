@@ -92,6 +92,13 @@ const typeDefs = gql`
     MEDIUM
     HIGH
   }
+
+  enum MuralAspect {
+    LG
+    MD
+    SM
+    XS
+  }
 `;
 
 export default typeDefs;

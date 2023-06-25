@@ -1,16 +1,17 @@
 'use client';
 
-import { useEffect, useState, use } from 'react';
-import RGL, { WidthProvider } from 'react-grid-layout';
+import { useEffect, useState, use, useCallback } from 'react';
+import RGL, { WidthProvider, Responsive } from 'react-grid-layout';
 import _ from 'lodash';
 
 import { MuralElement, ResizeHandle } from './MuralElement';
-import rx, { Subject } from 'rxjs';
+import { Subject } from 'rxjs';
+import * as rx from 'rxjs';
 import Point from '@/src/utils/Point';
 import useWindowSize from '@/src/hooks/useWindowSize';
 
-import 'react-grid-layout/css/styles.css';
-import 'react-resizable/css/styles.css';
+// import 'react-grid-layout/css/styles.css';
+// import 'react-resizable/css/styles.css';
 import useUserMural from '@/src/hooks/useUserMural';
 
 // GRID
@@ -34,6 +35,7 @@ export default function LayoutGrid({
     cellHeight = 10;
 
   useEffect(() => {
+    setLayouts((l) => l);
     const handleCreation = (point: Point) => {
       if (!windowX || !windowY) return;
       const main = document.querySelector('main');
@@ -62,6 +64,8 @@ export default function LayoutGrid({
       <ReactGridLayout
         {...{
           layout: layouts,
+          cols: 100,
+          // cols: Math.round(cellCountX),
           onLayoutChange: (l) => {
             onLayoutChange$.next(l);
             setLayouts(l);
@@ -69,11 +73,10 @@ export default function LayoutGrid({
           onDragStop: setLayouts,
           onResizeStop: setLayouts,
           rowHeight: cellSize,
-          cols: Math.round(cellCountX),
           margin: [gridMargin, gridMargin],
           resizeHandle: ResizeHandle(),
           draggableHandle: '.react-draggable-handle',
-          preventCollision: true,
+          preventCollision: false,
           allowOverlap: true,
           autoSize: true,
           useCSSTransforms: false,

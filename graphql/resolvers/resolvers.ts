@@ -19,6 +19,7 @@ import {
   Tag,
   MuralInput,
   Mural,
+  MuralAspect,
 } from '../types/graphql';
 import fetcher from '@/src/fetcher';
 

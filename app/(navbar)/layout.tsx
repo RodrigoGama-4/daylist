@@ -5,7 +5,6 @@ import CustomNavbar from '@/src/components/Navbar';
 import { useUser } from '@/src/providers/UserContext';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
   const user = useUser();
   if (user === null) redirect('/login');
 
@@ -14,7 +13,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <div className="flex relative z-50">
         <CustomNavbar />
       </div>
-      <main className="p-2 h-full flex-1 overflow-y-scroll">{children}</main>
+      <main className="p-2 h-full flex-1 overflow-scroll min-w-[768px]">
+        {children}
+      </main>
     </div>
   );
 }
