@@ -33,6 +33,7 @@ const typeDefs = gql`
 
   type Note {
     id: ID!
+    layout: Layout
     title: String! # extracted from content, for easy access
     content: String! # serialized Descendant[]
     priority: Priority

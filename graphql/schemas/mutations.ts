@@ -26,6 +26,7 @@ const typeDefs = gql`
   }
   input NoteInput {
     id: ID!
+    layout: ID
     content: String!
     priority: Priority
     owner: ID!
@@ -66,7 +67,6 @@ const typeDefs = gql`
   }
   type StatusOk {
     success: Boolean!
-    teste: String
   }
 `;
 export default typeDefs;

@@ -27,18 +27,13 @@ import fetcher from '@/src/fetcher';
 
 function inputToNote(noteInput: FstoreNote): Note {
   return {
-    ...noteInput,
     id: `${noteInput.id}`,
     owner: {
+      // este uid é usado abaixo para buscar o objeto User
       uid: `${noteInput.owner}`,
-      email: 'todo',
-      displayName: 'todo',
-      photoURL: '',
     },
     title: 'todo',
-    stats: [],
-    tags: [],
-    group: null,
+    content: noteInput.content,
   };
 }
 
@@ -99,7 +94,6 @@ const resolvers: Resolvers = {
         success: ok,
       };
     },
-
     saveNote: async (_, args) => {
       const note: FstoreNote = args.note;
       const ok = await setDocument(Fstore.NOTES, note.id, note);
@@ -107,7 +101,7 @@ const resolvers: Resolvers = {
         success: ok,
       };
     },
-
+    /** Salva todos os layouts por usuário */
     saveMural: async (_, args) => {
       const layout: FstoreLayouts = {
         uid: `${args.mural.uid}`,
@@ -124,15 +118,21 @@ const resolvers: Resolvers = {
       setDocument(Fstore.USERS, user.uid!, user);
       return null;
     },
-
-    teste: () => ({ success: true, teste: 'caso geral' }),
   },
 
-  StatusOk: {
-    teste: (parent) =>
-      parent.teste === 'caso geral'
-        ? 'Executou caso geral e SOBREESCREVEU com o resolver específico'
-        : 'Não deve ocorrer',
+  Note: {
+    owner: async (parent) => {
+      const user = (await getDocument<FstoreUsers>(
+        Fstore.USERS,
+        parent.owner.uid,
+      ))!;
+      return {
+        uid: `${user.uid}`,
+        photoURL: user.photoURL,
+        email: user.email,
+        displayName: user.displayName,
+      };
+    },
   },
 };
 export default resolvers;
