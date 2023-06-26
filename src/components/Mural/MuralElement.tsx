@@ -26,55 +26,30 @@ export function MuralElement({ layout }: { layout: RGL.Layout }) {
     setColor(randomColor);
   }, []);
 
+  const [rect, setRect] = useState<DOMRect>();
+  useEffect(() => {
+    if (isEditMode || rect) return;
+    const rgl = document.querySelector(
+      `#outer-layout-${layout.i}`,
+    ) as HTMLDivElement;
+    const r = rgl.getBoundingClientRect();
+    setRect(r);
+  }, [isEditMode]);
   const { windowX, windowY } = useWindowSize();
-  // const [rect, setRect] = useState<DOMRect>();
-  // useEffect(() => {
-  //   const self = document.querySelector(`#${itemID}`) as HTMLDivElement;
-  //   if (!self) return;
-  //   const _rect = self.getBoundingClientRect();
-  //   // const style = getComputedStyle(self);
-  //   setRect(_rect);
-  //   console.log(_rect.width, _rect.height);
-  // }, [itemID]);
-  const c = 16;
-  const vari2: Variants = {
+  const newHeight = 600,
+    newWidth = 600;
+  const vari3: Variants = {
     editing: {
-      // x: layout.x * c - windowX / 2 + 300,
-      // y: layout.y * c - windowY / 2 + 300,
-      left: '50%',
-      transform: 'translateX(-50%)',
-      width: 600,
-      height: 600,
+      x: (rect ? -(rect.x + newWidth / 2) : 0) + windowX / 2,
+      y: (rect ? -(rect.y + newHeight / 2) : 0) + windowY / 2,
+      width: newWidth,
+      height: newHeight,
     },
     notEditing: {
-      // x: layout.x,
-      // y: layout.y,
-      width: layout.w * c,
-      height: layout.h * c,
-    },
-    hover: {
-      outline: isEditMode ? '0x solid transparent' : `4px solid #${color}`,
-    },
-  };
-
-  const variants: Variants = {
-    editing: {
-      position: ['absolute', 'fixed'],
-      top: 0,
-      left: 0,
-      bottom: 0,
-      right: 0,
-      width: '600px',
-      height: ['82vh', '90vh'],
-    },
-    notEditing: {
-      position: ['fixed', 'absolute'],
-      top: 0,
-      left: 0,
-      bottom: 0,
-      right: 0,
-      width: ['fit', ''],
-      height: ['fit', ''],
+      x: 0,
+      y: 0,
+      width: rect?.width,
+      height: rect?.height,
     },
     hover: {
       outline: isEditMode ? '0x solid transparent' : `4px solid #${color}`,
@@ -100,15 +75,13 @@ export function MuralElement({ layout }: { layout: RGL.Layout }) {
         id={itemID}
         onDoubleClick={() => !isEditMode && toggleEditMode()}
         layout
-        // animate={isEditMode ? 'editing' : 'notEditing'}
         initial="notEditing"
         animate={isEditMode ? 'editing' : 'notEditing'}
-        variants={vari2}
+        variants={vari3}
         whileHover={'hover'}
         transition={{
-          bounce: 1,
-          duration: 1,
-          ease: 'easeOut',
+          duration: 0.4,
+          ease: 'backOut',
         }}
         className={`drop-shadow h-full w-full overflow-x-hidden flex flex-col m-auto ${
           !isEditMode ? 'select-none react-draggable-handle' : 'z-50 shadow-lg'
