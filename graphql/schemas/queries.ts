@@ -16,13 +16,14 @@ const typeDefs = gql`
     notes(uid: ID!): [Note!]!
     mural(uid: ID!): Mural!
     tags(uid: ID!): [Tag!]
+    user(uid: ID!): User
   }
   type Mural {
     uid: ID!
     layouts: [Layout!]!
   }
   type Layout {
-    note: ID!
+    note: ID # O layout é criado antes da nota
     i: ID!
     h: Int!
     w: Int!
@@ -32,6 +33,7 @@ const typeDefs = gql`
 
   type Note {
     id: ID!
+    layout: Layout
     title: String! # extracted from content, for easy access
     content: String! # serialized Descendant[]
     priority: Priority
@@ -43,10 +45,10 @@ const typeDefs = gql`
   }
 
   type User {
-    id: ID!
-    name: String!
-    email: String!
-    photoUrl: String!
+    uid: ID!
+    displayName: String
+    email: String
+    photoURL: String
     connections: [User!]
     groups: [SharingGroup!]
   }

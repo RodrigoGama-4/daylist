@@ -20,23 +20,20 @@ import {
   MuralInput,
   Mural,
   MuralAspect,
+  UserInput,
+  User,
 } from '../types/graphql';
 import fetcher from '@/src/fetcher';
 
 function inputToNote(noteInput: FstoreNote): Note {
   return {
-    ...noteInput,
     id: `${noteInput.id}`,
     owner: {
-      id: 'todo',
-      email: 'todo',
-      name: 'todo',
-      photoUrl: '',
+      // este uid é usado abaixo para buscar o objeto User
+      uid: `${noteInput.owner}`,
     },
     title: 'todo',
-    stats: [],
-    tags: [],
-    group: null,
+    content: noteInput.content,
   };
 }
 
@@ -74,6 +71,18 @@ const resolvers: Resolvers = {
         (await getDocument<FstoreTags>(Fstore.TAGS, args.uid))?.tags ?? null
       );
     },
+
+    user: async (_, args) => {
+      const u = await getDocument<FstoreUsers>(Fstore.USERS, args.uid);
+      return u
+        ? {
+            uid: `${u.uid}`,
+            displayName: u.displayName,
+            email: u.email,
+            photoURL: u.photoURL,
+          }
+        : null;
+    },
   },
 
   Mutation: {
@@ -85,7 +94,6 @@ const resolvers: Resolvers = {
         success: ok,
       };
     },
-
     saveNote: async (_, args) => {
       const note: FstoreNote = args.note;
       const ok = await setDocument(Fstore.NOTES, note.id, note);
@@ -93,7 +101,7 @@ const resolvers: Resolvers = {
         success: ok,
       };
     },
-
+    /** Salva todos os layouts por usuário */
     saveMural: async (_, args) => {
       const layout: FstoreLayouts = {
         uid: `${args.mural.uid}`,
@@ -104,15 +112,27 @@ const resolvers: Resolvers = {
         success: ok,
       };
     },
-
-    teste: () => ({ success: true, teste: 'caso geral' }),
+    /** cria ou atualiza o doc referente à um UID */
+    updateUser: async (_, args) => {
+      const user = args.user;
+      setDocument(Fstore.USERS, user.uid!, user);
+      return null;
+    },
   },
 
-  StatusOk: {
-    teste: (parent) =>
-      parent.teste === 'caso geral'
-        ? 'Executou caso geral e SOBREESCREVEU com o resolver específico'
-        : 'Não deve ocorrer',
+  Note: {
+    owner: async (parent) => {
+      const user = (await getDocument<FstoreUsers>(
+        Fstore.USERS,
+        parent.owner.uid,
+      ))!;
+      return {
+        uid: `${user.uid}`,
+        photoURL: user.photoURL,
+        email: user.email,
+        displayName: user.displayName,
+      };
+    },
   },
 };
 export default resolvers;
@@ -136,14 +156,17 @@ async function setDocument(
 
 //
 
-enum Fstore {
+const enum Fstore {
   NOTES = 'notes',
   TAGS = 'tags',
   LAYOUTS = 'layouts',
+  USERS = 'users',
 }
-type FstoreData = FstoreNote | FstoreLayouts | FstoreTags;
+type FstoreData = FstoreNote | FstoreLayouts | FstoreTags | FstoreUsers;
 type FstoreNote = NoteInput;
 type FstoreLayouts = MuralInput;
+type FstoreUsers = UserInput;
+// type FstoreUser =
 type FstoreTags = {
   tags: Tag[];
 };
