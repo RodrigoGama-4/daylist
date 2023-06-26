@@ -25,13 +25,32 @@ export function MuralElement({ layout }: { layout: RGL.Layout }) {
     setColor(randomColor);
   }, []);
 
+  const [rect, setRect] = useState<DOMRect>();
   useEffect(() => {
-    if (!isEditMode) return;
     const self = document.querySelector(`#${itemID}`) as HTMLDivElement;
+    if (!self || isEditMode) return;
     const rect = self.getBoundingClientRect();
-    const style = getComputedStyle(self);
-    console.log(rect.x, rect.y);
-  }, [isEditMode]);
+    // const style = getComputedStyle(self);
+    setRect(rect);
+    console.log(rect.width, rect.height);
+  }, [isEditMode, itemID]);
+  const vari: Variants = {
+    editing: {
+      x: rect?.x,
+      y: rect?.y,
+      width: 600,
+      height: 600,
+    },
+    notEditing: {
+      x: rect?.x,
+      y: rect?.y,
+      width: rect?.width,
+      height: rect?.height,
+    },
+    hover: {
+      outline: isEditMode ? '0x solid transparent' : `4px solid #${color}`,
+    },
+  };
 
   const variants: Variants = {
     editing: {
@@ -42,13 +61,15 @@ export function MuralElement({ layout }: { layout: RGL.Layout }) {
       right: 0,
       width: '600px',
       height: ['82vh', '90vh'],
-      // margin: 'auto',
     },
     notEditing: {
       position: ['fixed', 'absolute'],
+      top: 0,
+      left: 0,
+      bottom: 0,
+      right: 0,
       width: ['fit', ''],
       height: ['fit', ''],
-      // margin: '',
     },
     hover: {
       outline: isEditMode ? '0x solid transparent' : `4px solid #${color}`,
@@ -74,11 +95,14 @@ export function MuralElement({ layout }: { layout: RGL.Layout }) {
         id={itemID}
         onDoubleClick={() => !isEditMode && toggleEditMode()}
         layout
+        // animate={isEditMode ? 'editing' : 'notEditing'}
+        initial="notEditing"
         animate={isEditMode ? 'editing' : 'notEditing'}
-        variants={variants}
+        variants={vari}
         whileHover={'hover'}
         transition={{
           bounce: 1,
+          duration: 1,
           ease: 'easeOut',
         }}
         className={`drop-shadow h-full w-full overflow-x-hidden flex flex-col m-auto ${
