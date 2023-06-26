@@ -22,7 +22,7 @@ const typeDefs = gql`
     layouts: [Layout!]!
   }
   type Layout {
-    note: ID!
+    note: ID # O layout é criado antes da nota
     i: ID!
     h: Int!
     w: Int!

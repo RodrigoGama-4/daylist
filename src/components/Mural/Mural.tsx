@@ -92,7 +92,7 @@ function toLayoutInput(layout: RGL.Layout): Layout {
   const destr = ({ h, i, w, x, y }: Omit<Layout, 'note'>) => ({
     h,
     i,
-    note: 'TODO',
+    note: null,
     w,
     x,
     y,

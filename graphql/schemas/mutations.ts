@@ -15,7 +15,7 @@ const typeDefs = gql`
     layouts: [LayoutInput!]!
   }
   input LayoutInput {
-    note: ID!
+    note: ID
     i: ID!
     h: Int!
     w: Int!

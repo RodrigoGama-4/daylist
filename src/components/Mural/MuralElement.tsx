@@ -1,5 +1,13 @@
 'use client';
-import { ReactNode, HTMLAttributes, useState, useEffect, useRef } from 'react';
+import {
+  ReactNode,
+  HTMLAttributes,
+  useState,
+  useEffect,
+  useRef,
+  Dispatch,
+  SetStateAction,
+} from 'react';
 import RichEditor from '@/src/components/RichEditor/RichEditor';
 import Toolbar from '@/src/components/RichEditor/Toolbar';
 import SlateProvider from '@/src/components/RichEditor/SlateProvider';
@@ -9,9 +17,20 @@ import { Subject } from 'rxjs';
 import _ from 'lodash';
 import RGL from 'react-grid-layout';
 import useWindowSize from '@/src/hooks/useWindowSize';
+import { graphql } from '@/graphql/types';
+import { useMutation } from '@apollo/client';
+import { useUser } from '@/src/providers/UserContext';
+import { useSlate } from 'slate-react';
+import { NoteInput } from '@/graphql/types/graphql';
 
 /** Container para Note, Section ou Image */
-export function MuralElement({ layout }: { layout: RGL.Layout }) {
+export function MuralElement({
+  layout,
+  setLayouts,
+}: {
+  layout: RGL.Layout;
+  setLayouts: Dispatch<SetStateAction<RGL.Layout>>;
+}) {
   const itemID = `item-${layout.i}`;
   const [isEditMode, __setEditMode] = useState(false);
   const toggleEditMode = () => {
@@ -35,20 +54,9 @@ export function MuralElement({ layout }: { layout: RGL.Layout }) {
   const newHeight = 600,
     newWidth = 600;
 
-  const EditingOverlay = (
-    <div
-      className={`fixed bottom-0 top-0 right-0 left-0 transition-all duration-500  backdrop-blur ${
-        isEditMode
-          ? 'pointer-events-auto opacity-100'
-          : 'pointer-events-none opacity-0'
-      }`}
-      onClick={() => isEditMode && toggleEditMode()}
-    />
-  );
-
   return (
     <SlateProvider>
-      {EditingOverlay}
+      <EditingOverlay {...{ isEditMode, toggleEditMode }} />
       <motion.div
         key={layout.i}
         id={itemID}
@@ -100,6 +108,43 @@ export function MuralElement({ layout }: { layout: RGL.Layout }) {
   );
 }
 
+function EditingOverlay({
+  isEditMode,
+  toggleEditMode,
+}: {
+  isEditMode: boolean;
+  toggleEditMode: () => void;
+}) {
+  const [saveNote, { error }] = useMutation(SAVE_NOTE);
+  const user = useUser();
+  const editor = useSlate();
+
+  if (error)
+    alert(`Erro ao salvar nota
+      ${error.message}\n${error.cause}`);
+
+  return (
+    <div
+      className={`fixed bottom-0 top-0 right-0 left-0 transition-all duration-500  backdrop-blur ${
+        isEditMode
+          ? 'pointer-events-auto opacity-100'
+          : 'pointer-events-none opacity-0'
+      }`}
+      onClick={() => {
+        if (!isEditMode) return;
+        toggleEditMode();
+        if (!user) return;
+        const note: NoteInput = {
+          id: Date.now(),
+          content: JSON.stringify(editor.children),
+          owner: user.uid,
+        };
+        saveNote({ variables: { note } });
+      }}
+    />
+  );
+}
+
 export function DragHandle() {
   return (
     <div
@@ -126,3 +171,11 @@ export function ResizeHandle() {
 }
 
 export const onToggleEditMode$ = new Subject<boolean>();
+
+const SAVE_NOTE = graphql(`
+  mutation SaveNote($note: NoteInput!) {
+    saveNote(note: $note) {
+      success
+    }
+  }
+`);

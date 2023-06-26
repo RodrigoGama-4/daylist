@@ -37,7 +37,7 @@ export default function LayoutGrid({
 
   useEffect(() => {
     setLayouts((l) => l);
-    const handleCreation = (point: Point) => {
+    const create = (point: Point) => {
       if (!windowX || !windowY) return;
       const main = document.querySelector('main');
       const pointX = point.x,
@@ -56,7 +56,7 @@ export default function LayoutGrid({
         },
       ]);
     };
-    const sub = onAskNoteCreation$.subscribe(handleCreation);
+    const sub = onAskNoteCreation$.subscribe(create);
     return () => sub.unsubscribe();
   }, [windowX, windowY]);
 
@@ -89,7 +89,6 @@ export default function LayoutGrid({
           <div
             key={layout.i}
             id={`outer-layout-${layout.i}`}
-            // className="border-4 border-red-500"
             style={{
               minHeight: cellSize,
               minWidth: cellSize,
@@ -102,7 +101,7 @@ export default function LayoutGrid({
               setLayouts(ls);
             }}
           >
-            <MuralElement layout={layout} />
+            <MuralElement layout={layout} setLayouts={setLayouts} />
           </div>
         ))}
       </ReactGridLayout>
