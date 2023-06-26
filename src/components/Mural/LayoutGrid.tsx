@@ -89,6 +89,7 @@ export default function LayoutGrid({
           <div
             key={layout.i}
             id={`outer-layout-${layout.i}`}
+            // className="border-4 border-red-500"
             style={{
               minHeight: cellSize,
               minWidth: cellSize,

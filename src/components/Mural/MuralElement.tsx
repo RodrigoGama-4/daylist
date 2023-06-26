@@ -34,23 +34,6 @@ export function MuralElement({ layout }: { layout: RGL.Layout }) {
   const { windowX, windowY } = useWindowSize();
   const newHeight = 600,
     newWidth = 600;
-  const vari3: Variants = {
-    editing: {
-      x: (parentRect ? -(parentRect.x + newWidth / 2) : 0) + windowX / 2,
-      y: (parentRect ? -(parentRect.y + newHeight / 2) : 0) + windowY / 2,
-      width: newWidth,
-      height: newHeight,
-    },
-    notEditing: {
-      // x: 0,
-      // y: 0,
-      // width: parentRect?.width,
-      // height: parentRect?.height,
-    },
-    hover: {
-      outline: isEditMode ? '0x solid transparent' : `4px solid #${color}`,
-    },
-  };
 
   const EditingOverlay = (
     <div
@@ -72,14 +55,33 @@ export function MuralElement({ layout }: { layout: RGL.Layout }) {
         onDoubleClick={() => !isEditMode && toggleEditMode()}
         layout
         initial="notEditing"
-        animate={isEditMode ? 'editing' : 'notEditing'}
-        variants={vari3}
-        whileHover={'hover'}
+        animate={
+          isEditMode
+            ? {
+                x:
+                  (parentRect ? -(parentRect.x + newWidth / 2) : 0) +
+                  windowX / 2,
+                y:
+                  (parentRect ? -(parentRect.y + newHeight / 2) : 0) +
+                  windowY / 2,
+                width: newWidth,
+                height: newHeight,
+              }
+            : {
+                x: 0,
+                y: 0,
+                width: '100%',
+                height: '100%',
+              }
+        }
+        whileHover={{
+          outline: isEditMode ? '0x solid transparent' : `4px solid #${color}`,
+        }}
         transition={{
           duration: 0.4,
           ease: 'backOut',
         }}
-        className={`drop-shadow h-full w-full bottom-0 right-0 left-0 top-0 overflow-x-hidden flex flex-col m-auto ${
+        className={`drop-shadow h-full w-full overflow-x-hidden flex flex-col m-auto ${
           !isEditMode ? 'select-none react-draggable-handle' : 'z-50 shadow-lg'
         }`}
         style={{
