@@ -8,6 +8,7 @@ import { MdDragHandle, MdDragIndicator } from 'react-icons/md';
 import { Subject } from 'rxjs';
 import _ from 'lodash';
 import RGL from 'react-grid-layout';
+import useWindowSize from '@/src/hooks/useWindowSize';
 
 /** Container para Note, Section ou Image */
 export function MuralElement({ layout }: { layout: RGL.Layout }) {
@@ -25,27 +26,31 @@ export function MuralElement({ layout }: { layout: RGL.Layout }) {
     setColor(randomColor);
   }, []);
 
-  const [rect, setRect] = useState<DOMRect>();
-  useEffect(() => {
-    const self = document.querySelector(`#${itemID}`) as HTMLDivElement;
-    if (!self || isEditMode) return;
-    const rect = self.getBoundingClientRect();
-    // const style = getComputedStyle(self);
-    setRect(rect);
-    console.log(rect.width, rect.height);
-  }, [isEditMode, itemID]);
-  const vari: Variants = {
+  const { windowX, windowY } = useWindowSize();
+  // const [rect, setRect] = useState<DOMRect>();
+  // useEffect(() => {
+  //   const self = document.querySelector(`#${itemID}`) as HTMLDivElement;
+  //   if (!self) return;
+  //   const _rect = self.getBoundingClientRect();
+  //   // const style = getComputedStyle(self);
+  //   setRect(_rect);
+  //   console.log(_rect.width, _rect.height);
+  // }, [itemID]);
+  const c = 16;
+  const vari2: Variants = {
     editing: {
-      x: rect?.x,
-      y: rect?.y,
+      // x: layout.x * c - windowX / 2 + 300,
+      // y: layout.y * c - windowY / 2 + 300,
+      left: '50%',
+      transform: 'translateX(-50%)',
       width: 600,
       height: 600,
     },
     notEditing: {
-      x: rect?.x,
-      y: rect?.y,
-      width: rect?.width,
-      height: rect?.height,
+      // x: layout.x,
+      // y: layout.y,
+      width: layout.w * c,
+      height: layout.h * c,
     },
     hover: {
       outline: isEditMode ? '0x solid transparent' : `4px solid #${color}`,
@@ -98,7 +103,7 @@ export function MuralElement({ layout }: { layout: RGL.Layout }) {
         // animate={isEditMode ? 'editing' : 'notEditing'}
         initial="notEditing"
         animate={isEditMode ? 'editing' : 'notEditing'}
-        variants={vari}
+        variants={vari2}
         whileHover={'hover'}
         transition={{
           bounce: 1,

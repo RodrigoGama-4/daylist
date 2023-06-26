@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, use, useCallback } from 'react';
-import RGL, { WidthProvider, Responsive } from 'react-grid-layout';
+import RGL, { WidthProvider } from 'react-grid-layout';
 import _ from 'lodash';
 
 import { MuralElement, ResizeHandle } from './MuralElement';
@@ -77,6 +77,7 @@ export default function LayoutGrid({
           resizeHandle: ResizeHandle(),
           draggableHandle: '.react-draggable-handle',
           preventCollision: false,
+          isBounded: false,
           allowOverlap: true,
           autoSize: true,
           useCSSTransforms: false,
