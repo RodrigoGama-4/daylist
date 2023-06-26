@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useState, use, useCallback } from 'react';
-import RGL, { WidthProvider, Responsive } from 'react-grid-layout';
+import RGL, { WidthProvider } from 'react-grid-layout';
 import _ from 'lodash';
 
-import { MuralElement, ResizeHandle } from './MuralElement';
+import { MuralElement, ResizeHandle, onToggleEditMode$ } from './MuralElement';
 import { Subject } from 'rxjs';
 import * as rx from 'rxjs';
 import Point from '@/src/utils/Point';
@@ -13,6 +13,7 @@ import useWindowSize from '@/src/hooks/useWindowSize';
 // import 'react-grid-layout/css/styles.css';
 // import 'react-resizable/css/styles.css';
 import useUserMural from '@/src/hooks/useUserMural';
+import { motion } from 'framer-motion';
 
 // GRID
 export default function LayoutGrid({
@@ -60,7 +61,7 @@ export default function LayoutGrid({
   }, [windowX, windowY]);
 
   return (
-    <div className={`${className ?? ''}`}>
+    <div id="rgl" className={`${className ?? ''}`}>
       <ReactGridLayout
         {...{
           layout: layouts,
@@ -77,6 +78,7 @@ export default function LayoutGrid({
           resizeHandle: ResizeHandle(),
           draggableHandle: '.react-draggable-handle',
           preventCollision: false,
+          isBounded: false,
           allowOverlap: true,
           autoSize: true,
           useCSSTransforms: false,
@@ -86,6 +88,7 @@ export default function LayoutGrid({
         {layouts.map((layout, j) => (
           <div
             key={layout.i}
+            id={`outer-layout-${layout.i}`}
             style={{
               minHeight: cellSize,
               minWidth: cellSize,

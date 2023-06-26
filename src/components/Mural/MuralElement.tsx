@@ -8,6 +8,7 @@ import { MdDragHandle, MdDragIndicator } from 'react-icons/md';
 import { Subject } from 'rxjs';
 import _ from 'lodash';
 import RGL from 'react-grid-layout';
+import useWindowSize from '@/src/hooks/useWindowSize';
 
 /** Container para Note, Section ou Image */
 export function MuralElement({ layout }: { layout: RGL.Layout }) {
@@ -25,30 +26,26 @@ export function MuralElement({ layout }: { layout: RGL.Layout }) {
     setColor(randomColor);
   }, []);
 
+  const [parentRect, setParentRect] = useState<DOMRect>();
   useEffect(() => {
-    if (!isEditMode) return;
-    const self = document.querySelector(`#${itemID}`) as HTMLDivElement;
-    const rect = self.getBoundingClientRect();
-    const style = getComputedStyle(self);
-    console.log(rect.x, rect.y);
-  }, [isEditMode]);
-
-  const variants: Variants = {
+    const parent = document.querySelector(`#outer-layout-${layout.i}`);
+    setParentRect(parent?.getBoundingClientRect());
+  }, [isEditMode, layout]);
+  const { windowX, windowY } = useWindowSize();
+  const newHeight = 600,
+    newWidth = 600;
+  const vari3: Variants = {
     editing: {
-      position: ['absolute', 'fixed'],
-      top: 0,
-      left: 0,
-      bottom: 0,
-      right: 0,
-      width: '600px',
-      height: ['82vh', '90vh'],
-      // margin: 'auto',
+      x: (parentRect ? -(parentRect.x + newWidth / 2) : 0) + windowX / 2,
+      y: (parentRect ? -(parentRect.y + newHeight / 2) : 0) + windowY / 2,
+      width: newWidth,
+      height: newHeight,
     },
     notEditing: {
-      position: ['fixed', 'absolute'],
-      width: ['fit', ''],
-      height: ['fit', ''],
-      // margin: '',
+      // x: 0,
+      // y: 0,
+      // width: parentRect?.width,
+      // height: parentRect?.height,
     },
     hover: {
       outline: isEditMode ? '0x solid transparent' : `4px solid #${color}`,
@@ -74,14 +71,15 @@ export function MuralElement({ layout }: { layout: RGL.Layout }) {
         id={itemID}
         onDoubleClick={() => !isEditMode && toggleEditMode()}
         layout
+        initial="notEditing"
         animate={isEditMode ? 'editing' : 'notEditing'}
-        variants={variants}
+        variants={vari3}
         whileHover={'hover'}
         transition={{
-          bounce: 1,
-          ease: 'easeOut',
+          duration: 0.4,
+          ease: 'backOut',
         }}
-        className={`drop-shadow h-full w-full overflow-x-hidden flex flex-col m-auto ${
+        className={`drop-shadow h-full w-full bottom-0 right-0 left-0 top-0 overflow-x-hidden flex flex-col m-auto ${
           !isEditMode ? 'select-none react-draggable-handle' : 'z-50 shadow-lg'
         }`}
         style={{
