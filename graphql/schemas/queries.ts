@@ -16,6 +16,7 @@ const typeDefs = gql`
     notes(uid: ID!): [Note!]!
     mural(uid: ID!): Mural!
     tags(uid: ID!): [Tag!]
+    user(uid: ID!): User
   }
   type Mural {
     uid: ID!
@@ -43,10 +44,10 @@ const typeDefs = gql`
   }
 
   type User {
-    id: ID!
-    name: String!
-    email: String!
-    photoUrl: String!
+    uid: ID!
+    displayName: String
+    email: String
+    photoURL: String
     connections: [User!]
     groups: [SharingGroup!]
   }

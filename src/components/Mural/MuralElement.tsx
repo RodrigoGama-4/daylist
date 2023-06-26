@@ -29,7 +29,7 @@ export function MuralElement({
   setLayouts,
 }: {
   layout: RGL.Layout;
-  setLayouts: Dispatch<SetStateAction<RGL.Layout>>;
+  setLayouts: Dispatch<SetStateAction<RGL.Layout[]>>;
 }) {
   const itemID = `item-${layout.i}`;
   const [isEditMode, __setEditMode] = useState(false);

@@ -5,11 +5,34 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useUser } from '../providers/UserContext';
 import { auth } from '../firebase';
+import { graphql } from '@/graphql/types';
+import { useMutation } from '@apollo/client';
+
+const SAVE_USER = graphql(`
+  mutation SaveUser($user: UserInput!) {
+    updateUser(user: $user) {
+      success
+    }
+  }
+`);
 
 export default function Login() {
   const router = useRouter();
   const user = useUser();
-  if (user) router.push('/');
+  const [saveUser] = useMutation(SAVE_USER);
+  if (user) {
+    // MUTATION
+    saveUser({
+      variables: {
+        user: {
+          displayName: user.displayName,
+          email: user.email,
+          uid: user.uid,
+          photoURL: user.photoURL,
+        },
+      },
+    }).finally(() => router.push('/'));
+  }
 
   return (
     <div className="flex justify-center items-center h-screen">

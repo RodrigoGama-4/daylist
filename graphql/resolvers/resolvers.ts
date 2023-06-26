@@ -20,6 +20,8 @@ import {
   MuralInput,
   Mural,
   MuralAspect,
+  UserInput,
+  User,
 } from '../types/graphql';
 import fetcher from '@/src/fetcher';
 
@@ -28,10 +30,10 @@ function inputToNote(noteInput: FstoreNote): Note {
     ...noteInput,
     id: `${noteInput.id}`,
     owner: {
-      id: 'todo',
+      uid: `${noteInput.owner}`,
       email: 'todo',
-      name: 'todo',
-      photoUrl: '',
+      displayName: 'todo',
+      photoURL: '',
     },
     title: 'todo',
     stats: [],
@@ -74,6 +76,18 @@ const resolvers: Resolvers = {
         (await getDocument<FstoreTags>(Fstore.TAGS, args.uid))?.tags ?? null
       );
     },
+
+    user: async (_, args) => {
+      const u = await getDocument<FstoreUsers>(Fstore.USERS, args.uid);
+      return u
+        ? {
+            uid: `${u.uid}`,
+            displayName: u.displayName,
+            email: u.email,
+            photoURL: u.photoURL,
+          }
+        : null;
+    },
   },
 
   Mutation: {
@@ -103,6 +117,12 @@ const resolvers: Resolvers = {
       return {
         success: ok,
       };
+    },
+    /** cria ou atualiza o doc referente à um UID */
+    updateUser: async (_, args) => {
+      const user = args.user;
+      setDocument(Fstore.USERS, user.uid!, user);
+      return null;
     },
 
     teste: () => ({ success: true, teste: 'caso geral' }),
@@ -136,14 +156,17 @@ async function setDocument(
 
 //
 
-enum Fstore {
+const enum Fstore {
   NOTES = 'notes',
   TAGS = 'tags',
   LAYOUTS = 'layouts',
+  USERS = 'users',
 }
-type FstoreData = FstoreNote | FstoreLayouts | FstoreTags;
+type FstoreData = FstoreNote | FstoreLayouts | FstoreTags | FstoreUsers;
 type FstoreNote = NoteInput;
 type FstoreLayouts = MuralInput;
+type FstoreUsers = UserInput;
+// type FstoreUser =
 type FstoreTags = {
   tags: Tag[];
 };

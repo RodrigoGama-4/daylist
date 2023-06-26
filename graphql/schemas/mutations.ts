@@ -9,6 +9,8 @@ const typeDefs = gql`
     saveMural(mural: MuralInput!): StatusOk!
     # Tests
     teste(content: String!): StatusOk!
+    # Users
+    updateUser(user: UserInput!): StatusOk
   }
   input MuralInput {
     uid: ID!
@@ -47,6 +49,14 @@ const typeDefs = gql`
     note: ID!
     count: Int
     isComplete: Boolean
+  }
+  input UserInput {
+    uid: ID!
+    displayName: String
+    email: String
+    photoURL: String
+    connections: [ID!]
+    groups: [ID!]
   }
   input SharingGroupInput {
     id: ID!
