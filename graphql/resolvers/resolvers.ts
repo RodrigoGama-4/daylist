@@ -36,15 +36,22 @@ function inputToNote(noteInput: FstoreNote): Note {
     content: noteInput.content,
   };
 }
-
+async function getNote(id: string | number): Promise<Note | null> {
+  const noteInput = await getDocument<FstoreNote>(Fstore.NOTES, id);
+  return noteInput ? inputToNote(noteInput) : null;
+}
 const resolvers: Resolvers = {
   Query: {
     hello: () => 'Hello',
     world: () => 'World!',
 
-    note: async (_, args) => {
-      const noteInput = await getDocument<FstoreNote>(Fstore.NOTES, args.id);
-      return noteInput ? inputToNote(noteInput) : null;
+    note: async (_, args) => getNote(args.id),
+
+    noteOfLayout: async (_, args) => {
+      const mural = await getDocument<FstoreLayouts>(Fstore.LAYOUTS, args.uid);
+      const layout = mural?.layouts.find((l) => l.i === args.lid);
+      const nid = layout?.note ? `${layout.note}` : null;
+      return nid ? getNote(nid) : null;
     },
 
     notes: async (_, { uid }) => {

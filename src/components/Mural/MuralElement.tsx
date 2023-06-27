@@ -39,12 +39,14 @@ export function MuralElement({
     onToggleEditMode$.next(v);
   };
 
+  // adicionar cor de fundo aleatória
   const [color, setColor] = useState('AAA');
   useEffect(() => {
     const randomColor = Math.floor(Math.random() * 16777215).toString(16);
     setColor(randomColor);
   }, []);
 
+  // salvar rect do RGL.Layout para fazer transição ao modo de edição
   const [parentRect, setParentRect] = useState<DOMRect>();
   useEffect(() => {
     const parent = document.querySelector(`#outer-layout-${layout.i}`);
@@ -121,7 +123,7 @@ function EditingOverlay({
 
   if (error)
     alert(`Erro ao salvar nota
-      ${error.message}\n${error.cause}`);
+      ${error.cause}\n${error.message}`);
 
   return (
     <div
@@ -135,7 +137,7 @@ function EditingOverlay({
         toggleEditMode();
         if (!user) return;
         const note: NoteInput = {
-          id: Date.now(),
+          id: 'TODO', // TODO
           content: JSON.stringify(editor.children),
           owner: user.uid,
         };

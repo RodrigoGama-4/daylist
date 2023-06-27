@@ -89,13 +89,12 @@ const SAVE_MURAL_LAYOUTS = graphql(`
 `);
 
 function toLayoutInput(layout: RGL.Layout): Layout {
-  const destr = ({ h, i, w, x, y }: Omit<Layout, 'note'>) => ({
+  const convert = ({ h, i, w, x, y }: RGL.Layout): Layout => ({
     h,
     i,
-    note: null,
     w,
     x,
     y,
   });
-  return destr(layout);
+  return convert(layout);
 }

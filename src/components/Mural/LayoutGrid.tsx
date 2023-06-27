@@ -30,11 +30,12 @@ export default function LayoutGrid({
   const { windowX, windowY } = useWindowSize();
   const cellSize = 16; // pixels, X & Y
   const gridMargin = 0; // gridMargin != 0 quebra adição de nota em Y
-  const cellCountX = windowX / (cellSize + gridMargin), // grid units
-    cellCountY = windowY / (cellSize + gridMargin);
+  // const cellCountX = windowX / (cellSize + gridMargin), // grid units
+  //   cellCountY = windowY / (cellSize + gridMargin);
   const cellWidth = 14,
     cellHeight = 10;
 
+  // criar nota ao clicar no mural
   useEffect(() => {
     setLayouts((l) => l);
     const create = (point: Point) => {
@@ -44,7 +45,6 @@ export default function LayoutGrid({
         pointY = point.y + main!.scrollTop;
       const x = Math.floor(pointX / cellSize) - Math.floor(cellWidth / 2);
       const y = Math.floor(pointY / cellSize) - Math.floor(cellHeight / 2);
-      // TODO: save layout
       setLayouts((L) => [
         ...L,
         {
