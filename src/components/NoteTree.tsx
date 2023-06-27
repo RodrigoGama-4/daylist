@@ -29,10 +29,9 @@ export const CustomNoteTree = ({ isVisible }: { isVisible: boolean }) => {
           animate={'aberto'}
           exit={'fechado'}
           style={{
+            width: '10rem',
             height: '100vh',
             border: '2px solid black',
-            left: '4rem',
-            padding: '7rem',
             background: 'gray',
           }}
         />
