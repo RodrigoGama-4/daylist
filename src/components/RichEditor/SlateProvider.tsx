@@ -17,31 +17,31 @@ const GET_NOTES = graphql(`
   }
 `);
 
-export default function SlateProvider({ children }: { children: ReactNode }) {
+export default function SlateProvider({
+  children,
+  initialValue: init,
+}: {
+  children: ReactNode;
+  initialValue?: Descendant[];
+}) {
   const [editor] = useState(() =>
     withNoteLayout(withHistory(withReact(createEditor()))),
   );
   const [initialValue, setInitialValue] = useState<Descendant[]>();
 
-  // const { data, loading, error } = useQuery(GET_NOTES, {
-  //   variables: { id: 'FAxqEfBzPA0IgO9pZOnI' },
-  // });
-  // useEffect(() => {
-  //   if (!data) return;
-  //   alert(data.note?.content);
-  // }, [data]);
-
   useEffect(() => {
     // const db = localStorage.getItem('content');
     // if (!db)
-    setInitialValue([
-      {
-        type: 'note-title',
-        children: [{ text: '' }],
-      },
-    ]);
+    setInitialValue(
+      init ?? [
+        {
+          type: 'note-title',
+          children: [{ text: '' }],
+        },
+      ],
+    );
     // else setInitialValue(JSON.parse(db));
-  }, []);
+  }, [init]);
 
   if (!initialValue) return <></>;
   return (

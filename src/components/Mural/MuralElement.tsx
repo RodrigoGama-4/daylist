@@ -6,6 +6,7 @@ import {
   useEffect,
   useRef,
   Dispatch,
+  useMemo,
   SetStateAction,
 } from 'react';
 import RichEditor from '@/src/components/RichEditor/RichEditor';
@@ -18,10 +19,13 @@ import _ from 'lodash';
 import RGL from 'react-grid-layout';
 import useWindowSize from '@/src/hooks/useWindowSize';
 import { graphql } from '@/graphql/types';
-import { useMutation } from '@apollo/client';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import { useUser } from '@/src/providers/UserContext';
 import { useSlate } from 'slate-react';
-import { NoteInput } from '@/graphql/types/graphql';
+import { Note, NoteInput } from '@/graphql/types/graphql';
+import { Descendant } from 'slate';
+import { auth } from '@/src/firebase';
+import { toLayoutInput } from './Mural';
 
 /** Container para Note, Section ou Image */
 export function MuralElement({
@@ -38,6 +42,22 @@ export function MuralElement({
     __setEditMode(v);
     onToggleEditMode$.next(v);
   };
+
+  // buscar nota
+  const [GetNoteContent, noteData] = useLazyQuery(GET_NOTE_CONTENT);
+  const note = noteData.data?.noteOfLayout;
+  useEffect(() => {
+    if (!auth.currentUser) return;
+    GetNoteContent({
+      variables: {
+        layoutID: layout.i,
+        uid: auth.currentUser.uid,
+      },
+    });
+  }, []);
+  const initialValue: Descendant[] | undefined = note
+    ? JSON.parse(note.content)
+    : undefined;
 
   // adicionar cor de fundo aleatória
   const [color, setColor] = useState('AAA');
@@ -57,8 +77,8 @@ export function MuralElement({
     newWidth = 600;
 
   return (
-    <SlateProvider>
-      <EditingOverlay {...{ isEditMode, toggleEditMode }} />
+    <SlateProvider initialValue={initialValue}>
+      <EditingOverlay {...{ isEditMode, toggleEditMode, note, layout }} />
       <motion.div
         key={layout.i}
         id={itemID}
@@ -110,14 +130,20 @@ export function MuralElement({
   );
 }
 
+// TODO: refatorar para usar um único overlay pro mural inteiro
 function EditingOverlay({
   isEditMode,
   toggleEditMode,
+  note,
+  layout,
 }: {
   isEditMode: boolean;
   toggleEditMode: () => void;
+  note: Nota | null | undefined;
+  layout: RGL.Layout;
 }) {
   const [saveNote, { error }] = useMutation(SAVE_NOTE);
+  const [saveLayout] = useMutation(SAVE_LAYOUT);
   const user = useUser();
   const editor = useSlate();
 
@@ -133,15 +159,29 @@ function EditingOverlay({
           : 'pointer-events-none opacity-0'
       }`}
       onClick={() => {
-        if (!isEditMode) return;
-        toggleEditMode();
-        if (!user) return;
-        const note: NoteInput = {
-          id: 'TODO', // TODO
+        isEditMode && toggleEditMode();
+        if (!user || note === undefined) return;
+        const id = note === null ? Date.now() : note.id;
+        const _note: NoteInput = {
+          id,
           content: JSON.stringify(editor.children),
           owner: user.uid,
         };
-        saveNote({ variables: { note } });
+        if (note === null) {
+          // TODO salvar layout com ID da nota nova
+          alert('inserindo id da nota no layout');
+          saveLayout({
+            variables: {
+              layoutUid: {
+                ...toLayoutInput(layout),
+                uid: user.uid,
+                note: id,
+              },
+            },
+          });
+        }
+
+        saveNote({ variables: { note: _note } });
       }}
     />
   );
@@ -177,6 +217,24 @@ export const onToggleEditMode$ = new Subject<boolean>();
 const SAVE_NOTE = graphql(`
   mutation SaveNote($note: NoteInput!) {
     saveNote(note: $note) {
+      success
+    }
+  }
+`);
+
+type Nota = Pick<Note, 'id' | 'content'>;
+const GET_NOTE_CONTENT = graphql(`
+  query GetLayoutNote($uid: ID!, $layoutID: ID!) {
+    noteOfLayout(uid: $uid, lid: $layoutID) {
+      id
+      content
+    }
+  }
+`);
+
+const SAVE_LAYOUT = graphql(`
+  mutation SaveLayout($layoutUid: LayoutUIDInput!) {
+    saveLayout(layout: $layoutUid) {
       success
     }
   }

@@ -88,7 +88,7 @@ const SAVE_MURAL_LAYOUTS = graphql(`
   }
 `);
 
-function toLayoutInput(layout: RGL.Layout): Layout {
+export function toLayoutInput(layout: RGL.Layout): Layout {
   const convert = ({ h, i, w, x, y }: RGL.Layout): Layout => ({
     h,
     i,

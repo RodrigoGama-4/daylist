@@ -19,6 +19,8 @@ import {
   Tag,
   MuralInput,
   Mural,
+  LayoutInput,
+  LayoutUidInput,
   MuralAspect,
   UserInput,
   User,
@@ -101,6 +103,7 @@ const resolvers: Resolvers = {
         success: ok,
       };
     },
+
     saveNote: async (_, args) => {
       const note: FstoreNote = args.note;
       const ok = await setDocument(Fstore.NOTES, note.id, note);
@@ -108,17 +111,32 @@ const resolvers: Resolvers = {
         success: ok,
       };
     },
+
     /** Salva todos os layouts por usuário */
     saveMural: async (_, args) => {
-      const layout: FstoreLayouts = {
+      const mural: FstoreLayouts = {
         uid: `${args.mural.uid}`,
         layouts: args.mural.layouts,
       };
-      const ok = await setDocument(Fstore.LAYOUTS, layout.uid!, layout);
+      const ok = await setDocument(Fstore.LAYOUTS, mural.uid!, mural);
       return {
         success: ok,
       };
     },
+
+    /** Salva um layout de nota individual */
+    saveLayout: async (_, args) => {
+      const { uid, ...layout } = args.layout;
+      const q = query(
+        collection(db, Fstore.LAYOUTS),
+        where('layouts', 'array-contains', { i: layout.i }),
+      );
+      const docs = await getDocs(q);
+      console.log(docs.size);
+      doc(db, Fstore.LAYOUTS, `${uid}`);
+      return null;
+    },
+
     /** cria ou atualiza o doc referente à um UID */
     updateUser: async (_, args) => {
       const user = args.user;

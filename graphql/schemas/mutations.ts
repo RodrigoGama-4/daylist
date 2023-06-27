@@ -7,6 +7,7 @@ const typeDefs = gql`
     saveNote(note: NoteInput!): StatusOk!
     # Layouts
     saveMural(mural: MuralInput!): StatusOk!
+    saveLayout(layout: LayoutUIDInput!): StatusOk
     # Tests
     teste(content: String!): StatusOk!
     # Users
@@ -18,6 +19,15 @@ const typeDefs = gql`
   }
   input LayoutInput {
     note: ID
+    i: ID!
+    h: Int!
+    w: Int!
+    x: Int!
+    y: Int!
+  }
+  input LayoutUIDInput {
+    note: ID
+    uid: ID!
     i: ID!
     h: Int!
     w: Int!
