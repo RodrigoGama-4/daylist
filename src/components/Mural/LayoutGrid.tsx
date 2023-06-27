@@ -8,6 +8,7 @@ import { MuralElement, ResizeHandle, onToggleEditMode$ } from './MuralElement';
 import { Subject } from 'rxjs';
 import * as rx from 'rxjs';
 import Point from '@/src/utils/Point';
+import { Layout } from '@/graphql/types/graphql';
 import useWindowSize from '@/src/hooks/useWindowSize';
 
 // import 'react-grid-layout/css/styles.css';
@@ -24,7 +25,7 @@ export default function LayoutGrid({
   isCreateMode: boolean;
 }) {
   // o último elemento é o primeiro a ser visto (como se fosse z-index)
-  const [layouts, setLayouts] = useState<RGL.Layout[]>([]);
+  const [layouts, setLayouts] = useState<Layout[]>([]);
   useUserMural((l) => setLayouts(l));
 
   const { windowX, windowY } = useWindowSize();
@@ -37,7 +38,6 @@ export default function LayoutGrid({
 
   // criar nota ao clicar no mural
   useEffect(() => {
-    setLayouts((l) => l);
     const create = (point: Point) => {
       if (!windowX || !windowY) return;
       const main = document.querySelector('main');

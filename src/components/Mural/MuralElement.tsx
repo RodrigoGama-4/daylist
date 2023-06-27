@@ -22,7 +22,7 @@ import { graphql } from '@/graphql/types';
 import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import { useUser } from '@/src/providers/UserContext';
 import { useSlate } from 'slate-react';
-import { Note, NoteInput } from '@/graphql/types/graphql';
+import { Layout, Note, NoteInput } from '@/graphql/types/graphql';
 import { Descendant } from 'slate';
 import { auth } from '@/src/firebase';
 import { toLayoutInput } from './Mural';
@@ -32,8 +32,8 @@ export function MuralElement({
   layout,
   setLayouts,
 }: {
-  layout: RGL.Layout;
-  setLayouts: Dispatch<SetStateAction<RGL.Layout[]>>;
+  layout: Layout;
+  setLayouts: Dispatch<SetStateAction<Layout[]>>;
 }) {
   const itemID = `item-${layout.i}`;
   const [isEditMode, __setEditMode] = useState(false);
@@ -78,13 +78,14 @@ export function MuralElement({
 
   return (
     <SlateProvider initialValue={initialValue}>
-      <EditingOverlay {...{ isEditMode, toggleEditMode, note, layout }} />
+      <EditingOverlay
+        {...{ isEditMode, toggleEditMode, note, layout, setLayouts }}
+      />
       <motion.div
         key={layout.i}
         id={itemID}
         onDoubleClick={() => !isEditMode && toggleEditMode()}
         layout
-        initial="notEditing"
         animate={
           isEditMode
             ? {
@@ -136,20 +137,20 @@ function EditingOverlay({
   toggleEditMode,
   note,
   layout,
+  setLayouts,
 }: {
   isEditMode: boolean;
   toggleEditMode: () => void;
   note: Nota | null | undefined;
-  layout: RGL.Layout;
+  layout: Layout;
+  setLayouts: Dispatch<SetStateAction<Layout[]>>;
 }) {
   const [saveNote, { error }] = useMutation(SAVE_NOTE);
   const [saveLayout] = useMutation(SAVE_LAYOUT);
   const user = useUser();
   const editor = useSlate();
 
-  if (error)
-    alert(`Erro ao salvar nota
-      ${error.cause}\n${error.message}`);
+  if (error) throw error;
 
   return (
     <div
@@ -162,14 +163,7 @@ function EditingOverlay({
         isEditMode && toggleEditMode();
         if (!user || note === undefined) return;
         const id = note === null ? Date.now() : note.id;
-        const _note: NoteInput = {
-          id,
-          content: JSON.stringify(editor.children),
-          owner: user.uid,
-        };
         if (note === null) {
-          // TODO salvar layout com ID da nota nova
-          alert('inserindo id da nota no layout');
           saveLayout({
             variables: {
               layoutUid: {
@@ -179,8 +173,13 @@ function EditingOverlay({
               },
             },
           });
+          setLayouts((l) => [...l, { ...layout, note: `${id}` }]);
         }
-
+        const _note: NoteInput = {
+          id,
+          content: JSON.stringify(editor.children),
+          owner: user.uid,
+        };
         saveNote({ variables: { note: _note } });
       }}
     />

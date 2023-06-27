@@ -8,7 +8,7 @@ import RGL from 'react-grid-layout';
 import { useMutation } from '@apollo/client';
 import { graphql } from '@/graphql/types';
 import { useUser } from '@/src/providers/UserContext';
-import { Layout } from '@/graphql/types/graphql';
+import { Layout, LayoutInput } from '@/graphql/types/graphql';
 import { auth } from '@/src/firebase';
 import * as rx from 'rxjs';
 
@@ -88,13 +88,14 @@ const SAVE_MURAL_LAYOUTS = graphql(`
   }
 `);
 
-export function toLayoutInput(layout: RGL.Layout): Layout {
-  const convert = ({ h, i, w, x, y }: RGL.Layout): Layout => ({
+export function toLayoutInput(layout: Layout): LayoutInput {
+  const convert = ({ h, i, w, x, y, note }: Layout): LayoutInput => ({
     h,
     i,
     w,
     x,
     y,
+    note,
   });
   return convert(layout);
 }

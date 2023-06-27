@@ -10,6 +10,7 @@ import {
   query,
   documentId,
   setDoc,
+  FirestoreError,
 } from 'firebase/firestore';
 import {
   Resolvers,
@@ -42,6 +43,15 @@ async function getNote(id: string | number): Promise<Note | null> {
   const noteInput = await getDocument<FstoreNote>(Fstore.NOTES, id);
   return noteInput ? inputToNote(noteInput) : null;
 }
+async function getMural(uid: string | number): Promise<FstoreLayouts> {
+  const doc = await getDocument<FstoreLayouts>(Fstore.LAYOUTS, uid);
+  return {
+    // 1 to 1 map
+    uid: `${uid}`,
+    layouts: doc?.layouts ?? [],
+  };
+}
+
 const resolvers: Resolvers = {
   Query: {
     hello: () => 'Hello',
@@ -66,14 +76,7 @@ const resolvers: Resolvers = {
       return notes.map((n) => inputToNote(n));
     },
 
-    mural: async (_, args) => {
-      const doc = await getDocument<FstoreLayouts>(Fstore.LAYOUTS, args.uid);
-      return {
-        // 1 to 1 map
-        uid: `${args.uid}`,
-        layouts: (doc?.layouts as Layout[]) ?? [],
-      };
-    },
+    mural: async (_, args) => (await getMural(args.uid)) as Mural,
 
     tags: async (_, args) => {
       return (
@@ -127,13 +130,12 @@ const resolvers: Resolvers = {
     /** Salva um layout de nota individual */
     saveLayout: async (_, args) => {
       const { uid, ...layout } = args.layout;
-      const q = query(
-        collection(db, Fstore.LAYOUTS),
-        where('layouts', 'array-contains', { i: layout.i }),
-      );
-      const docs = await getDocs(q);
-      console.log(docs.size);
-      doc(db, Fstore.LAYOUTS, `${uid}`);
+      const mural = await getMural(uid);
+      const layouts = mural.layouts;
+      const index = layouts.findIndex((l) => l.i === layout.i);
+      if (index < 0) throw new Error('Erro: layout inexistente');
+      layouts[index] = layout;
+      setDocument(Fstore.LAYOUTS, uid, mural);
       return null;
     },
 
@@ -166,9 +168,11 @@ async function getDocument<T extends FstoreData>(
   colecao: Fstore,
   id: string | number,
 ) {
-  const r = await getDoc(doc(db, colecao, `${id}`));
-  if (!r.exists()) return null;
-  return r.data() as T;
+  const [ref, err] = await fetcher(getDoc(doc(db, colecao, `${id}`)));
+  if (err instanceof FirestoreError) throw err;
+  else if (ref === null) throw new Error(`Falha ao buscar firestore: ${err}`);
+  if (!ref.exists()) return null;
+  return ref.data() as T;
 }
 async function setDocument(
   collection: Fstore,

@@ -1,9 +1,10 @@
 import { auth } from '@/src/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { graphql } from '@/graphql/types';
+import { Layout } from '@/graphql/types/graphql';
 import { useQuery, useLazyQuery } from '@apollo/client';
 import { useEffect, useState } from 'react';
-import { Layout } from 'react-grid-layout';
+import RGL from 'react-grid-layout';
 import { apolloClient } from '@/app/layout';
 
 const GET_LAYOUTS = graphql(`
@@ -15,6 +16,7 @@ const GET_LAYOUTS = graphql(`
         w
         x
         y
+        note
       }
     }
   }
@@ -47,7 +49,7 @@ export default function useUserMural(onLoad?: (layouts: Layout[]) => void) {
 
 // fiz pra usar com o use() hook mas acho que n vou usar
 export function getUserMural() {
-  return new Promise<Layout[] | null>((resolve, reject) => {
+  return new Promise<RGL.Layout[] | null>((resolve, reject) => {
     const unsub = auth.onAuthStateChanged(async (user) => {
       if (!user) return resolve(null);
       const { data, loading, error } = await apolloClient.query({
