@@ -6,7 +6,9 @@ import {
   useEffect,
   useRef,
   Dispatch,
+  useMemo,
   SetStateAction,
+  useCallback,
 } from 'react';
 import RichEditor from '@/src/components/RichEditor/RichEditor';
 import Toolbar from '@/src/components/RichEditor/Toolbar';
@@ -18,73 +20,107 @@ import _ from 'lodash';
 import RGL from 'react-grid-layout';
 import useWindowSize from '@/src/hooks/useWindowSize';
 import { graphql } from '@/graphql/types';
-import { useMutation } from '@apollo/client';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import { useUser } from '@/src/providers/UserContext';
 import { useSlate } from 'slate-react';
-import { NoteInput } from '@/graphql/types/graphql';
+import { Layout, Note, NoteInput } from '@/graphql/types/graphql';
+import { Descendant } from 'slate';
+import { filterLayoutFields } from './LayoutGrid';
 
 /** Container para Note, Section ou Image */
 export function MuralElement({
   layout,
   setLayouts,
+  itemID,
 }: {
-  layout: RGL.Layout;
-  setLayouts: Dispatch<SetStateAction<RGL.Layout[]>>;
+  layout: Layout;
+  setLayouts: Dispatch<SetStateAction<Layout[]>>;
+  itemID: string;
 }) {
-  const itemID = `item-${layout.i}`;
   const [isEditMode, __setEditMode] = useState(false);
   const toggleEditMode = () => {
     const v = !isEditMode;
     __setEditMode(v);
     onToggleEditMode$.next(v);
   };
-
   const [color, setColor] = useState('AAA');
+
+  const [GetNoteContent, { data: noteData }] = useLazyQuery(GET_NOTE_CONTENT);
+  const [note, setNote] = useState<NoteFragment | null>();
+  useUser((u) =>
+    GetNoteContent({
+      variables: {
+        layoutID: layout.i,
+        uid: u.uid,
+      },
+    }),
+  );
+  useEffect(() => {
+    console.log('reload');
+    const note = noteData?.noteOfLayout;
+    if (!note) return setNote(note);
+    const content: Descendant[] = JSON.parse(note.content);
+    setNote({ id: note.id, content });
+  }, [noteData]);
+
+  const [parentRect, setParentRect] = useState<DOMRect>();
+  const { windowX, windowY } = useWindowSize();
+  const newHeight = 600,
+    newWidth = 600;
+  const variants: Variants = {
+    initial: {
+      opacity: 0,
+      transition: {
+        duration: 2000,
+      },
+    },
+    editing: {
+      opacity: 1,
+      x: (parentRect ? -(parentRect.x + newWidth / 2) : 0) + windowX / 2,
+      y: (parentRect ? -(parentRect.y + newHeight / 2) : 0) + windowY / 2,
+      width: newWidth,
+      height: newHeight,
+    },
+    notEditing: {
+      opacity: 1,
+      x: 0,
+      y: 0,
+      width: '100%',
+      height: '100%',
+    },
+    hovering: {
+      outline: isEditMode ? '0x solid transparent' : `4px solid #${color}`,
+    },
+  };
+
+  // adicionar cor de fundo aleatória
   useEffect(() => {
     const randomColor = Math.floor(Math.random() * 16777215).toString(16);
     setColor(randomColor);
   }, []);
 
-  const [parentRect, setParentRect] = useState<DOMRect>();
+  // salvar rect do RGL.Layout para fazer transição ao modo de edição
   useEffect(() => {
     const parent = document.querySelector(`#outer-layout-${layout.i}`);
     setParentRect(parent?.getBoundingClientRect());
   }, [isEditMode, layout]);
-  const { windowX, windowY } = useWindowSize();
-  const newHeight = 600,
-    newWidth = 600;
 
   return (
-    <SlateProvider>
-      <EditingOverlay {...{ isEditMode, toggleEditMode }} />
+    <SlateProvider
+      initialValue={note ? note.content : note === null ? null : undefined}
+    >
+      <EditingOverlay
+        {...{ isEditMode, toggleEditMode, note, layout, setLayouts }}
+      />
       <motion.div
         key={layout.i}
         id={itemID}
         onDoubleClick={() => !isEditMode && toggleEditMode()}
         layout
-        initial="notEditing"
-        animate={
-          isEditMode
-            ? {
-                x:
-                  (parentRect ? -(parentRect.x + newWidth / 2) : 0) +
-                  windowX / 2,
-                y:
-                  (parentRect ? -(parentRect.y + newHeight / 2) : 0) +
-                  windowY / 2,
-                width: newWidth,
-                height: newHeight,
-              }
-            : {
-                x: 0,
-                y: 0,
-                width: '100%',
-                height: '100%',
-              }
-        }
-        whileHover={{
-          outline: isEditMode ? '0x solid transparent' : `4px solid #${color}`,
-        }}
+        variants={variants}
+        initial={'initial'}
+        animate={isEditMode ? 'editing' : 'notEditing'}
+        whileHover={'hovering'}
         transition={{
           duration: 0.4,
           ease: 'backOut',
@@ -108,20 +144,26 @@ export function MuralElement({
   );
 }
 
+// TODO: refatorar para usar um único overlay pro mural inteiro
 function EditingOverlay({
   isEditMode,
   toggleEditMode,
+  note,
+  layout,
+  setLayouts,
 }: {
   isEditMode: boolean;
   toggleEditMode: () => void;
+  note: NoteFragment | null | undefined;
+  layout: Layout;
+  setLayouts: Dispatch<SetStateAction<Layout[]>>;
 }) {
   const [saveNote, { error }] = useMutation(SAVE_NOTE);
+  const [saveLayout] = useMutation(SAVE_LAYOUT);
   const user = useUser();
   const editor = useSlate();
 
-  if (error)
-    alert(`Erro ao salvar nota
-      ${error.message}\n${error.cause}`);
+  if (error) throw error;
 
   return (
     <div
@@ -131,15 +173,32 @@ function EditingOverlay({
           : 'pointer-events-none opacity-0'
       }`}
       onClick={() => {
-        if (!isEditMode) return;
-        toggleEditMode();
-        if (!user) return;
-        const note: NoteInput = {
-          id: Date.now(),
+        isEditMode && toggleEditMode();
+        if (!user || note === undefined) return;
+        const id = note === null ? Date.now() : note.id;
+        if (note === null) {
+          // include note in layout and update layouts state
+          saveLayout({
+            variables: {
+              layoutUid: {
+                ...filterLayoutFields(layout),
+                uid: user.uid,
+                note: id,
+              },
+            },
+          });
+          setLayouts((layouts) => {
+            const rest = layouts.filter((l) => l.i !== layout.i);
+            const modified = { ...layout, note: `${id}` };
+            return [...rest, modified];
+          });
+        }
+        const _note: NoteInput = {
+          id,
           content: JSON.stringify(editor.children),
           owner: user.uid,
         };
-        saveNote({ variables: { note } });
+        saveNote({ variables: { note: _note } });
       }}
     />
   );
@@ -175,6 +234,24 @@ export const onToggleEditMode$ = new Subject<boolean>();
 const SAVE_NOTE = graphql(`
   mutation SaveNote($note: NoteInput!) {
     saveNote(note: $note) {
+      success
+    }
+  }
+`);
+
+type NoteFragment = { id: string | number; content: Descendant[] };
+const GET_NOTE_CONTENT = graphql(`
+  query GetLayoutNote($uid: ID!, $layoutID: ID!) {
+    noteOfLayout(uid: $uid, lid: $layoutID) {
+      id
+      content
+    }
+  }
+`);
+
+const SAVE_LAYOUT = graphql(`
+  mutation SaveLayout($layoutUid: LayoutUIDInput!) {
+    saveLayout(layout: $layoutUid) {
       success
     }
   }

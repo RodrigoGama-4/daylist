@@ -10,6 +10,7 @@ import {
   query,
   documentId,
   setDoc,
+  FirestoreError,
 } from 'firebase/firestore';
 import {
   Resolvers,
@@ -19,6 +20,8 @@ import {
   Tag,
   MuralInput,
   Mural,
+  LayoutInput,
+  LayoutUidInput,
   MuralAspect,
   UserInput,
   User,
@@ -36,15 +39,31 @@ function inputToNote(noteInput: FstoreNote): Note {
     content: noteInput.content,
   };
 }
+async function getNote(id: string | number): Promise<Note | null> {
+  const noteInput = await getDocument<FstoreNote>(Fstore.NOTES, id);
+  return noteInput ? inputToNote(noteInput) : null;
+}
+async function getMural(uid: string | number): Promise<FstoreLayouts> {
+  const doc = await getDocument<FstoreLayouts>(Fstore.LAYOUTS, uid);
+  return {
+    // 1 to 1 map
+    uid: `${uid}`,
+    layouts: doc?.layouts ?? [],
+  };
+}
 
 const resolvers: Resolvers = {
   Query: {
     hello: () => 'Hello',
     world: () => 'World!',
 
-    note: async (_, args) => {
-      const noteInput = await getDocument<FstoreNote>(Fstore.NOTES, args.id);
-      return noteInput ? inputToNote(noteInput) : null;
+    note: async (_, args) => getNote(args.id),
+
+    noteOfLayout: async (_, args) => {
+      const mural = await getDocument<FstoreLayouts>(Fstore.LAYOUTS, args.uid);
+      const layout = mural?.layouts.find((l) => l.i === args.lid);
+      const nid = layout?.note ? `${layout.note}` : null;
+      return nid ? getNote(nid) : null;
     },
 
     notes: async (_, { uid }) => {
@@ -57,14 +76,7 @@ const resolvers: Resolvers = {
       return notes.map((n) => inputToNote(n));
     },
 
-    mural: async (_, args) => {
-      const doc = await getDocument<FstoreLayouts>(Fstore.LAYOUTS, args.uid);
-      return {
-        // 1 to 1 map
-        uid: `${args.uid}`,
-        layouts: (doc?.layouts as Layout[]) ?? [],
-      };
-    },
+    mural: async (_, args) => (await getMural(args.uid)) as Mural,
 
     tags: async (_, args) => {
       return (
@@ -94,6 +106,7 @@ const resolvers: Resolvers = {
         success: ok,
       };
     },
+
     saveNote: async (_, args) => {
       const note: FstoreNote = args.note;
       const ok = await setDocument(Fstore.NOTES, note.id, note);
@@ -101,17 +114,31 @@ const resolvers: Resolvers = {
         success: ok,
       };
     },
+
     /** Salva todos os layouts por usuário */
     saveMural: async (_, args) => {
-      const layout: FstoreLayouts = {
+      const mural: FstoreLayouts = {
         uid: `${args.mural.uid}`,
         layouts: args.mural.layouts,
       };
-      const ok = await setDocument(Fstore.LAYOUTS, layout.uid!, layout);
+      const ok = await setDocument(Fstore.LAYOUTS, mural.uid!, mural);
       return {
         success: ok,
       };
     },
+
+    /** Salva um layout de nota individual */
+    saveLayout: async (_, args) => {
+      const { uid, ...layout } = args.layout;
+      const mural = await getMural(uid);
+      const layouts = mural.layouts;
+      const index = layouts.findIndex((l) => l.i === layout.i);
+      if (index < 0) throw new Error('Erro: layout inexistente');
+      layouts[index] = layout;
+      setDocument(Fstore.LAYOUTS, uid, mural);
+      return null;
+    },
+
     /** cria ou atualiza o doc referente à um UID */
     updateUser: async (_, args) => {
       const user = args.user;
@@ -141,9 +168,11 @@ async function getDocument<T extends FstoreData>(
   colecao: Fstore,
   id: string | number,
 ) {
-  const r = await getDoc(doc(db, colecao, `${id}`));
-  if (!r.exists()) return null;
-  return r.data() as T;
+  const [ref, err] = await fetcher(getDoc(doc(db, colecao, `${id}`)));
+  if (err instanceof FirestoreError) throw err;
+  else if (ref === null) throw new Error(`Falha ao buscar firestore: ${err}`);
+  if (!ref.exists()) return null;
+  return ref.data() as T;
 }
 async function setDocument(
   collection: Fstore,

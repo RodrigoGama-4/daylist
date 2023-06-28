@@ -5,6 +5,7 @@ import {
   createContext,
   ReactNode,
   useEffect,
+  useRef,
 } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../firebase';
@@ -24,10 +25,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
 }
 
 export const useUser = (onLoad?: (user: User) => void) => {
+  const onLoadRef = useRef(onLoad);
+  const onLoaded = onLoadRef.current;
   const _user = useContext(UserContext);
   useEffect(() => {
-    if (!onLoad) return;
-    if (_user) onLoad(_user);
-  }, [_user, onLoad]);
+    _user && onLoaded && onLoaded(_user);
+  }, [_user, onLoaded]);
   return _user;
 };

@@ -17,6 +17,7 @@ const typeDefs = gql`
     mural(uid: ID!): Mural!
     tags(uid: ID!): [Tag!]
     user(uid: ID!): User
+    noteOfLayout(uid: ID!, lid: ID!): Note
   }
   type Mural {
     uid: ID!

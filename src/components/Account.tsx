@@ -59,7 +59,7 @@ export default function AccountInfo({ isVisible }: { isVisible: boolean }) {
             {user.displayName},
           </p>
           <p className="position-relative mb-0" style={{ top: 4 }}>
-            defenetly from earth
+            certamente um terráqueo
           </p>
         </div>
       </div>
