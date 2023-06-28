@@ -3,14 +3,7 @@ import Spinner from 'react-bootstrap/Spinner';
 import LayoutGrid, { onAskNoteCreation$, onLayoutChange$ } from './LayoutGrid';
 import { BiNote } from 'react-icons/bi';
 import { useRef, useState, use, useEffect } from 'react';
-import useUserMural, { getUserMural } from '@/src/hooks/useUserMural';
-import RGL from 'react-grid-layout';
-import { useMutation } from '@apollo/client';
-import { graphql } from '@/graphql/types';
-import { useUser } from '@/src/providers/UserContext';
-import { Layout, LayoutInput } from '@/graphql/types/graphql';
-import { auth } from '@/src/firebase';
-import * as rx from 'rxjs';
+import useUserMural from '@/src/hooks/useUserMural';
 
 export default function Mural() {
   // Layout do mural armazenado no DB

@@ -8,6 +8,7 @@ import {
   Dispatch,
   useMemo,
   SetStateAction,
+  useCallback,
 } from 'react';
 import RichEditor from '@/src/components/RichEditor/RichEditor';
 import Toolbar from '@/src/components/RichEditor/Toolbar';
@@ -24,7 +25,6 @@ import { useUser } from '@/src/providers/UserContext';
 import { useSlate } from 'slate-react';
 import { Layout, Note, NoteInput } from '@/graphql/types/graphql';
 import { Descendant } from 'slate';
-import { auth } from '@/src/firebase';
 import { filterLayoutFields } from './LayoutGrid';
 
 /** Container para Note, Section ou Image */
@@ -46,8 +46,17 @@ export function MuralElement({
   const [color, setColor] = useState('AAA');
 
   const [GetNoteContent, noteData] = useLazyQuery(GET_NOTE_CONTENT);
+  useUser((u) => {
+    console.log('.........................');
+    GetNoteContent({
+      variables: {
+        layoutID: layout.i,
+        uid: u.uid,
+      },
+    });
+  });
   const note = noteData.data?.noteOfLayout;
-  const initialValue: Descendant[] | undefined = note
+  const noteContent: Descendant[] | undefined = note
     ? JSON.parse(note.content)
     : undefined;
 
@@ -73,18 +82,10 @@ export function MuralElement({
     },
   };
 
+  // adicionar cor de fundo aleatória
   useEffect(() => {
-    // adicionar cor de fundo aleatória
     const randomColor = Math.floor(Math.random() * 16777215).toString(16);
     setColor(randomColor);
-    // buscar nota
-    if (!auth.currentUser) return;
-    GetNoteContent({
-      variables: {
-        layoutID: layout.i,
-        uid: auth.currentUser.uid,
-      },
-    });
   }, []);
 
   // salvar rect do RGL.Layout para fazer transição ao modo de edição
@@ -94,7 +95,7 @@ export function MuralElement({
   }, [isEditMode, layout]);
 
   return (
-    <SlateProvider initialValue={initialValue}>
+    <SlateProvider initialValue={noteContent}>
       <EditingOverlay
         {...{ isEditMode, toggleEditMode, note, layout, setLayouts }}
       />
