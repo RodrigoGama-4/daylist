@@ -20,28 +20,6 @@ export default function Mural() {
   const [isCreateMode, setIsCreatingNote] = useState(false);
   const toggleCreateMode = () => setIsCreatingNote(!isCreateMode);
 
-  const [saveLayouts] = useMutation(SAVE_MURAL_LAYOUTS);
-  useEffect(() => {
-    const sub = onLayoutChange$
-      .pipe(
-        rx.debounceTime(1500), // pega última mudança dentro de 2s
-      )
-      .subscribe((layouts) => {
-        console.log('salvando mural no firestore');
-        const user = auth.currentUser;
-        if (!user) return;
-        saveLayouts({
-          variables: {
-            mural: {
-              uid: user.uid,
-              layouts: layouts.map((l) => toLayoutInput(l)),
-            },
-          },
-        });
-      });
-    return () => sub.unsubscribe();
-  }, []);
-
   if (isLoadingMural)
     return (
       <div className="absolute top-0 bottom-0 left-0 right-0 flex justify-center items-center border-4">
@@ -78,24 +56,4 @@ export default function Mural() {
       </div>
     </div>
   );
-}
-
-const SAVE_MURAL_LAYOUTS = graphql(`
-  mutation SaveMuralLayouts($mural: MuralInput!) {
-    saveMural(mural: $mural) {
-      success
-    }
-  }
-`);
-
-export function toLayoutInput(layout: Layout): LayoutInput {
-  const convert = ({ h, i, w, x, y, note }: Layout): LayoutInput => ({
-    h,
-    i,
-    w,
-    x,
-    y,
-    note,
-  });
-  return convert(layout);
 }

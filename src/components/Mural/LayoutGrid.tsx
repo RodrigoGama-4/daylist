@@ -8,13 +8,16 @@ import { MuralElement, ResizeHandle, onToggleEditMode$ } from './MuralElement';
 import { Subject } from 'rxjs';
 import * as rx from 'rxjs';
 import Point from '@/src/utils/Point';
-import { Layout } from '@/graphql/types/graphql';
+import { Layout, LayoutInput } from '@/graphql/types/graphql';
 import useWindowSize from '@/src/hooks/useWindowSize';
 
 // import 'react-grid-layout/css/styles.css';
 // import 'react-resizable/css/styles.css';
 import useUserMural from '@/src/hooks/useUserMural';
 import { motion } from 'framer-motion';
+import { useMutation } from '@apollo/client';
+import { graphql } from '@/graphql/types';
+import { auth } from '@/src/firebase';
 
 // GRID
 export default function LayoutGrid({
@@ -35,6 +38,29 @@ export default function LayoutGrid({
   //   cellCountY = windowY / (cellSize + gridMargin);
   const cellWidth = 14,
     cellHeight = 10;
+
+  // salvar mural no firestore
+  const [saveLayouts] = useMutation(SAVE_MURAL_LAYOUTS);
+  useEffect(() => {
+    const sub = onLayoutChange$
+      .pipe(
+        rx.debounceTime(1500), // pega última mudança dentro de 2s
+      )
+      .subscribe((layouts) => {
+        console.log('salvando mural no firestore');
+        const user = auth.currentUser;
+        if (!user) return;
+        saveLayouts({
+          variables: {
+            mural: {
+              uid: user.uid,
+              layouts: layouts.map((l) => filterLayoutFields(l)),
+            },
+          },
+        });
+      });
+    return () => sub.unsubscribe();
+  }, []);
 
   // criar nota ao clicar no mural
   useEffect(() => {
@@ -67,9 +93,13 @@ export default function LayoutGrid({
           layout: layouts,
           cols: 100,
           // cols: Math.round(cellCountX),
-          onLayoutChange: (l) => {
-            onLayoutChange$.next(l);
-            setLayouts(l);
+          onLayoutChange: (rgl) => {
+            const inputs = rgl.map((layout, i) => ({
+              ...filterLayoutFields(layout),
+              note: layouts[i].note,
+            }));
+            onLayoutChange$.next(inputs);
+            setLayouts(inputs);
           },
           onDragStop: setLayouts,
           onResizeStop: setLayouts,
@@ -101,7 +131,11 @@ export default function LayoutGrid({
               setLayouts(ls);
             }}
           >
-            <MuralElement layout={layout} setLayouts={setLayouts} />
+            <MuralElement
+              layout={layout}
+              setLayouts={setLayouts}
+              itemID={`item-${layout.i}`}
+            />
           </div>
         ))}
       </ReactGridLayout>
@@ -114,3 +148,23 @@ const ReactGridLayout = WidthProvider(RGL);
 /** Observes the onDragEnd point in the _Mural_ */
 export const onAskNoteCreation$ = new Subject<Point>();
 export const onLayoutChange$ = new Subject<RGL.Layout[]>();
+
+const SAVE_MURAL_LAYOUTS = graphql(`
+  mutation SaveMuralLayouts($mural: MuralInput!) {
+    saveMural(mural: $mural) {
+      success
+    }
+  }
+`);
+
+export function filterLayoutFields(layout: Layout): LayoutInput & Layout {
+  const convert = ({ h, i, w, x, y, note }: Layout): LayoutInput => ({
+    h,
+    i,
+    w,
+    x,
+    y,
+    note,
+  });
+  return convert(layout) as LayoutInput & Layout;
+}
