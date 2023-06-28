@@ -176,7 +176,7 @@ function EditingOverlay({
         isEditMode && toggleEditMode();
         if (!user || note === undefined) return;
         const id = note === null ? Date.now() : note.id;
-        if (note !== null) {
+        if (note === null) {
           // include note in layout and update layouts state
           saveLayout({
             variables: {
