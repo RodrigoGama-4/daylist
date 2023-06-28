@@ -22,7 +22,7 @@ export default function SlateProvider({
   initialValue: init,
 }: {
   children: ReactNode;
-  initialValue?: Descendant[];
+  initialValue?: Descendant[] | null;
 }) {
   const [editor] = useState(() =>
     withNoteLayout(withHistory(withReact(createEditor()))),
@@ -33,12 +33,14 @@ export default function SlateProvider({
     // const db = localStorage.getItem('content');
     // if (!db)
     setInitialValue(
-      init ?? [
-        {
-          type: 'note-title',
-          children: [{ text: '' }],
-        },
-      ],
+      init !== null
+        ? init
+        : [
+            {
+              type: 'note-title',
+              children: [{ text: '' }],
+            },
+          ],
     );
     // else setInitialValue(JSON.parse(db));
   }, [init]);

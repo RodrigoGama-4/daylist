@@ -45,39 +45,50 @@ export function MuralElement({
   };
   const [color, setColor] = useState('AAA');
 
-  const [GetNoteContent, noteData] = useLazyQuery(GET_NOTE_CONTENT);
-  useUser((u) => {
-    console.log('.........................');
+  const [GetNoteContent, { data: noteData }] = useLazyQuery(GET_NOTE_CONTENT);
+  const [note, setNote] = useState<NoteFragment | null>();
+  useUser((u) =>
     GetNoteContent({
       variables: {
         layoutID: layout.i,
         uid: u.uid,
       },
-    });
-  });
-  const note = noteData.data?.noteOfLayout;
-  const noteContent: Descendant[] | undefined = note
-    ? JSON.parse(note.content)
-    : undefined;
+    }),
+  );
+  useEffect(() => {
+    console.log('reload');
+    const note = noteData?.noteOfLayout;
+    if (!note) return setNote(note);
+    const content: Descendant[] = JSON.parse(note.content);
+    setNote({ id: note.id, content });
+  }, [noteData]);
 
   const [parentRect, setParentRect] = useState<DOMRect>();
   const { windowX, windowY } = useWindowSize();
   const newHeight = 600,
     newWidth = 600;
   const variants: Variants = {
+    initial: {
+      opacity: 0,
+      transition: {
+        duration: 2000,
+      },
+    },
     editing: {
+      opacity: 1,
       x: (parentRect ? -(parentRect.x + newWidth / 2) : 0) + windowX / 2,
       y: (parentRect ? -(parentRect.y + newHeight / 2) : 0) + windowY / 2,
       width: newWidth,
       height: newHeight,
     },
-    default: {
+    notEditing: {
+      opacity: 1,
       x: 0,
       y: 0,
       width: '100%',
       height: '100%',
     },
-    hover: {
+    hovering: {
       outline: isEditMode ? '0x solid transparent' : `4px solid #${color}`,
     },
   };
@@ -95,7 +106,9 @@ export function MuralElement({
   }, [isEditMode, layout]);
 
   return (
-    <SlateProvider initialValue={noteContent}>
+    <SlateProvider
+      initialValue={note ? note.content : note === null ? null : undefined}
+    >
       <EditingOverlay
         {...{ isEditMode, toggleEditMode, note, layout, setLayouts }}
       />
@@ -105,8 +118,9 @@ export function MuralElement({
         onDoubleClick={() => !isEditMode && toggleEditMode()}
         layout
         variants={variants}
-        animate={isEditMode ? 'editing' : 'readonly'}
-        whileHover={'hover'}
+        initial={'initial'}
+        animate={isEditMode ? 'editing' : 'notEditing'}
+        whileHover={'hovering'}
         transition={{
           duration: 0.4,
           ease: 'backOut',
@@ -225,7 +239,7 @@ const SAVE_NOTE = graphql(`
   }
 `);
 
-type NoteFragment = Pick<Note, 'id' | 'content'>;
+type NoteFragment = { id: string | number; content: Descendant[] };
 const GET_NOTE_CONTENT = graphql(`
   query GetLayoutNote($uid: ID!, $layoutID: ID!) {
     noteOfLayout(uid: $uid, lid: $layoutID) {

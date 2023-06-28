@@ -27,9 +27,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
 export const useUser = (onLoad?: (user: User) => void) => {
   const onLoadRef = useRef(onLoad);
   const onLoaded = onLoadRef.current;
-  const user = useContext(UserContext);
+  const _user = useContext(UserContext);
   useEffect(() => {
-    user && onLoaded && onLoaded(user);
-  }, [user, onLoaded]);
-  return user;
+    _user && onLoaded && onLoaded(_user);
+  }, [_user, onLoaded]);
+  return _user;
 };
